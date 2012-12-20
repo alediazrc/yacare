@@ -1,0 +1,14 @@
+yacare_inicio:
+    resource: "@YacareInicioBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+yacare_base:
+    resource: "@YacareBaseBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+# Internal routing configuration to handle ESI
+#_internal:
+#    resource: "@FrameworkBundle/Resources/config/routing/internal.xml"
+#    prefix:   /_internal
