@@ -1,0 +1,9 @@
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP Fatal error:  Class 'Acme\DemoBundle\AcmeDemoBundle' not found in /home/ernesto/yacare/app/AppKernel.php on line 25
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP Stack trace:
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP   1. {main}() /home/ernesto/yacare/app/console:0
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP   2. Symfony\Component\Console\Application->run() /home/ernesto/yacare/app/console:22
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP   3. Symfony\Bundle\FrameworkBundle\Console\Application->doRun() /home/ernesto/yacare/vendor/symfony/symfony/src/Symfony/Component/Console/Application.php:105
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP   4. Symfony\Bundle\FrameworkBundle\Console\Application->registerCommands() /home/ernesto/yacare/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Console/Application.php:68
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP   5. Symfony\Component\HttpKernel\Kernel->boot() /home/ernesto/yacare/vendor/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/Console/Application.php:83
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP   6. Symfony\Component\HttpKernel\Kernel->initializeBundles() /home/ernesto/yacare/app/bootstrap.php.cache:569
+[20-Dec-2012 15:25:57 America/Argentina/Buenos_Aires] PHP   7. AppKernel->registerBundles() /home/ernesto/yacare/app/bootstrap.php.cache:797
