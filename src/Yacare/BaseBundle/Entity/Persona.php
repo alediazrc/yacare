@@ -10,17 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Persona
+class Persona extends Yacare\BaseBundle\Entity\EndidadBase
 {
-    /**
-     * @var integer $id
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @var string $Apellido
      *
@@ -133,32 +124,7 @@ class Persona
      */
     private $Nacionalidad;
 
-    /**
-     * @var integer $Version
-     *
-     * @ORM\Column(name="Version", type="integer")
-     * @version
-     */
-    private $Version;
 
-    /**
-     * @var integer $TimeStamp
-     *
-     * @ORM\Column(name="TimeStamp", type="datetime")
-     * @version
-     */
-    private $TimeStamp;
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set Apellido
