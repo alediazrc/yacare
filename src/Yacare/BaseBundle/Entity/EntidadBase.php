@@ -66,6 +66,6 @@ class EntidadBase
     
     public function __unset($name)
     {
-        return unset($this->{$name});
+        unset($this->{$name});
     }
 }
