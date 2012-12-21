@@ -21,7 +21,6 @@ class AppKernel extends Kernel
             new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
             new Yacare\BaseBundle\YacareBaseBundle(),
             new Yacare\InicioBundle\YacareInicioBundle(),
-            new Yacare\AdminBundle\YacareAdminBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

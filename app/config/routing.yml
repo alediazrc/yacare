@@ -1,17 +1,12 @@
-yacare_admin:
-    resource: "@YacareAdminBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
 yacare_inicio:
     resource: "@YacareInicioBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /inicio/
 
 yacare_base:
     resource: "@YacareBaseBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /admin/
 
 # Internal routing configuration to handle ESI
 #_internal:
