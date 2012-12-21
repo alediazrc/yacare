@@ -12,6 +12,17 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Edificio extends Yacare\BaseBundle\Entity\EndidadBase
 {
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Oficina", mappedBy="Edificio")
+     */
+    protected $Oficina;
+    
+    public function __construct()
+    {
+        $this->Oficina = new ArrayCollection();
+    }
+    
     /**
      * @var integer $id
      *

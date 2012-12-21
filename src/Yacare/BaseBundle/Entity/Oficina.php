@@ -12,6 +12,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Oficina extends Yacare\BaseBundle\Entity\EndidadBase
 {
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Edificio", inversedBy="Oficina")
+     * @ORM\JoinColumn(name="Edificio", referencedColumnName="id")
+     */
+    protected $Edificio;
+    
+    
     /**
      * @var integer $id
      *
