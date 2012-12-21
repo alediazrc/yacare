@@ -22,7 +22,7 @@ class EntidadBase
     private $id;
     
     
-        /**
+    /**
      * @var integer $Version
      *
      * @ORM\Column(name="Version", type="integer")

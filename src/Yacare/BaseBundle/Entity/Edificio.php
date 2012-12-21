@@ -5,12 +5,12 @@ namespace Yacare\BaseBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Yacare\BaseBundle\Entity\Dependencia
+ * Yacare\BaseBundle\Entity\Edificio
  *
  * @ORM\Table()
  * @ORM\Entity
  */
-class Dependencia extends Yacare\BaseBundle\Entity\EndidadBase
+class Edificio extends Yacare\BaseBundle\Entity\EndidadBase
 {
     /**
      * @var integer $id
@@ -29,11 +29,18 @@ class Dependencia extends Yacare\BaseBundle\Entity\EndidadBase
     private $Nombre;
 
     /**
-     * @var integer $Parent
+     * @var string $Domicilio
      *
-     * @ORM\Column(name="Parent", type="integer")
+     * @ORM\Column(name="Domicilio", type="string", length=255)
      */
-    private $Parent;
+    private $Domicilio;
+
+    /**
+     * @var integer $Telefono
+     *
+     * @ORM\Column(name="Telefono", type="integer")
+     */
+    private $Telefono;
 
 
     /**
@@ -50,7 +57,7 @@ class Dependencia extends Yacare\BaseBundle\Entity\EndidadBase
      * Set Nombre
      *
      * @param string $nombre
-     * @return Dependencia
+     * @return Edificio
      */
     public function setNombre($nombre)
     {
@@ -70,25 +77,48 @@ class Dependencia extends Yacare\BaseBundle\Entity\EndidadBase
     }
 
     /**
-     * Set Parent
+     * Set Domicilio
      *
-     * @param integer $parent
-     * @return Dependencia
+     * @param string $domicilio
+     * @return Edificio
      */
-    public function setParent($parent)
+    public function setDomicilio($domicilio)
     {
-        $this->Parent = $parent;
+        $this->Domicilio = $domicilio;
     
         return $this;
     }
 
     /**
-     * Get Parent
+     * Get Domicilio
+     *
+     * @return string 
+     */
+    public function getDomicilio()
+    {
+        return $this->Domicilio;
+    }
+
+    /**
+     * Set Telefono
+     *
+     * @param integer $telefono
+     * @return Edificio
+     */
+    public function setTelefono($telefono)
+    {
+        $this->Telefono = $telefono;
+    
+        return $this;
+    }
+
+    /**
+     * Get Telefono
      *
      * @return integer 
      */
-    public function getParent()
+    public function getTelefono()
     {
-        return $this->Parent;
+        return $this->Telefono;
     }
 }
