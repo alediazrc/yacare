@@ -39,15 +39,12 @@ class Oficina
      * @ORM\Column(name="Nombre", type="string", length=255)
      */
     private $Nombre;
-
+    
     /**
-     * @var integer $Dependencia
-     *
-     * @ORM\Column(name="Dependencia", type="integer")
-     * @ORM\OneToOne(targetEntity="Dependencia")
+     * @ORM\ManyToOne(targetEntity="Dependencia", inversedBy="Oficina")
      * @ORM\JoinColumn(name="Dependencia", referencedColumnName="id")
      */
-    private $Dependencia;
+    protected $Dependencia;
 
     /**
      * @var integer $Edificio

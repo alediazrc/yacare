@@ -12,6 +12,17 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Dependencia
 {
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Oficina", mappedBy="Dependencia")
+     */
+    private $Oficina;
+    
+    public function __construct()
+    {
+        $this->Oficina = new ArrayCollection();
+    }
+    
     /**
      * @var integer $id
      *
