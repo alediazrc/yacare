@@ -5,23 +5,11 @@ namespace Yacare\BaseBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Yacare\BaseBundle\Entity\EntidadBase
+ * EntidadVersionable
  *
- * @ORM\Table()
- * @ORM\Entity
  */
-class EntidadBase
+class EntidadVersionable
 {
-    /**
-     * @var integer $id
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    
-    
     /**
      * @var integer $Version
      *
@@ -37,15 +25,22 @@ class EntidadBase
      * @version
      */
     private $TimeStamp;
+    
+    public function getVersion() {
+        return $this->Version;
+    }
 
+    public function setVersion($Version) {
+        $this->Version = $Version;
+    }
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
+    public function getTimeStamp() {
+        return $this->TimeStamp;
+    }
+
+    public function setTimeStamp($TimeStamp) {
+        $this->TimeStamp = $TimeStamp;
     }
 }
+
+?>

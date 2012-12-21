@@ -12,13 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Oficina
 {
-    
-    /**
-     * @ORM\ManyToOne(targetEntity="Edificio", inversedBy="Oficina")
-     * @ORM\JoinColumn(name="Edificio", referencedColumnName="id")
-     */
-    protected $Edificio;
-    
     /**
      * @var integer $id
      *
@@ -27,7 +20,19 @@ class Oficina
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
 
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    
     /**
      * @var string $Nombre
      *
@@ -39,6 +44,8 @@ class Oficina
      * @var integer $Dependencia
      *
      * @ORM\Column(name="Dependencia", type="integer")
+     * @ORM\OneToOne(targetEntity="Dependencia")
+     * @ORM\JoinColumn(name="Dependencia", referencedColumnName="id")
      */
     private $Dependencia;
 
@@ -56,16 +63,6 @@ class Oficina
      */
     private $Principal;
 
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set Nombre

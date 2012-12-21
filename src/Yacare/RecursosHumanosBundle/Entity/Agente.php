@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Agente extends Yacare\BaseBundle\Entity\Persona
+class Agente extends \Yacare\BaseBundle\Entity\Persona
 {
     /**
      * @var integer $id

@@ -31,7 +31,19 @@ class Edificio
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
 
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    
     /**
      * @var string $Nombre
      *
@@ -53,16 +65,6 @@ class Edificio
      */
     private $Telefono;
 
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set Nombre
