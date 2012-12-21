@@ -133,6 +133,22 @@ class Persona
      */
     private $Nacionalidad;
 
+    /**
+     * @var integer $Version
+     *
+     * @ORM\Column(name="Version", type="integer")
+     * @version
+     */
+    private $Version;
+
+    /**
+     * @var integer $TimeStamp
+     *
+     * @ORM\Column(name="TimeStamp", type="datetime")
+     * @version
+     */
+    private $TimeStamp;
+
 
     /**
      * Get id
