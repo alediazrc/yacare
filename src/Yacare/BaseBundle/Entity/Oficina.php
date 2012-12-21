@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Oficina extends Yacare\BaseBundle\Entity\EndidadBase
+class Oficina
 {
     
     /**
@@ -18,7 +18,6 @@ class Oficina extends Yacare\BaseBundle\Entity\EndidadBase
      * @ORM\JoinColumn(name="Edificio", referencedColumnName="id")
      */
     protected $Edificio;
-    
     
     /**
      * @var integer $id

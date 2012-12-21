@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Dependencia extends Yacare\BaseBundle\Entity\EndidadBase
+class Dependencia
 {
     /**
      * @var integer $id
