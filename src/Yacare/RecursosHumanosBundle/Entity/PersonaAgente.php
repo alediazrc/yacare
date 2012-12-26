@@ -1,11 +1,11 @@
 <?php
 
-namespace Yacare\BaseBundle\Entity;
+namespace Yacare\RecursosHumanosBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Yacare\BaseBundle\Entity\PersonaAgente
+ * Yacare\RecursosHumanosBundle\Entity\PersonaAgente
  *
  * @ORM\Table()
  * @ORM\Entity
@@ -22,7 +22,7 @@ class PersonaAgente
     private $id;
     
     /**
-     * @ORM\ManyToOne(targetEntity="Persona", inversedBy="PersonaAgente")
+     * @ORM\ManyToOne(targetEntity="\Yacare\BaseBundle\Entity\Persona", inversedBy="PersonaAgente")
      * @ORM\JoinColumn(name="Persona", referencedColumnName="id")
      */
     protected $Persona;

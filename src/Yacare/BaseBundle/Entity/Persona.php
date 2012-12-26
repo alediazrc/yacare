@@ -22,7 +22,7 @@ class Persona
     private $id;
     
     /**
-     * @ORM\OneToMany(targetEntity="PersonaAgente", mappedBy="Persona")
+     * @ORM\OneToMany(targetEntity="\Yacare\RecursosHumanosBundle\Entity\PersonaAgente", mappedBy="Persona")
      */
     private $PersonaAgente;
     
