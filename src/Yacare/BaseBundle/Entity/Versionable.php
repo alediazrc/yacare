@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * EntidadVersionable
  *
  */
-class EntidadVersionable
+trait Versionable
 {
     /**
      * @var integer $Version

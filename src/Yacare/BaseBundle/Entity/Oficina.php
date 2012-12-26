@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Oficina
 {
+    use \Yacare\BaseBundle\Entity\Versionable;
+    use \Yacare\BaseBundle\Entity\Timestampable;
+    
     /**
      * @var integer $id
      *
@@ -41,7 +44,6 @@ class Oficina
     
     /**
      * @ORM\ManyToOne(targetEntity="Dependencia", inversedBy="Oficina")
-     * @ORM\JoinColumn(name="Dependencia", referencedColumnName="id")
      */
     protected $Dependencia;
     
