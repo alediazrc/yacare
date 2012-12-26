@@ -21,7 +21,16 @@ class Persona
      */
     private $id;
     
-
+    /**
+     * @ORM\OneToMany(targetEntity="PersonaAgente", mappedBy="Persona")
+     */
+    private $PersonaAgente;
+    
+    public function __construct()
+    {
+        $this->PersonaAgente = new ArrayCollection();
+    }
+    
     /**
      * Get id
      *
