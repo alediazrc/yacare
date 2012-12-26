@@ -20,13 +20,17 @@
             <th>Fechanacimiento</th>
             <th>Genero</th>
             <th>Nacionalidad</th>
+            <th>Version</th>
+            <th>Timestamp</th>
+            <th>Createdat</th>
+            <th>Updatedat</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
     {% for entity in entities %}
         <tr>
-            <td><a href="{{ path('persona_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+            <td><a href="{{ path('admin_persona_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
             <td>{{ entity.Apellido }}</td>
             <td>{{ entity.Nombre }}</td>
             <td>{{ entity.RazonSocial }}</td>
@@ -43,13 +47,17 @@
             <td>{% if entity.FechaNacimiento %}{{ entity.FechaNacimiento|date('Y-m-d H:i:s') }}{% endif %}</td>
             <td>{{ entity.Genero }}</td>
             <td>{{ entity.Nacionalidad }}</td>
+            <td>{{ entity.Version }}</td>
+            <td>{% if entity.TimeStamp %}{{ entity.TimeStamp|date('Y-m-d H:i:s') }}{% endif %}</td>
+            <td>{% if entity.CreatedAt %}{{ entity.CreatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            <td>{% if entity.UpdatedAt %}{{ entity.UpdatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
             <td>
                 <ul>
                     <li>
-                        <a href="{{ path('persona_show', { 'id': entity.id }) }}">show</a>
+                        <a href="{{ path('admin_persona_show', { 'id': entity.id }) }}">show</a>
                     </li>
                     <li>
-                        <a href="{{ path('persona_edit', { 'id': entity.id }) }}">edit</a>
+                        <a href="{{ path('admin_persona_edit', { 'id': entity.id }) }}">edit</a>
                     </li>
                 </ul>
             </td>
@@ -60,7 +68,7 @@
 
 <ul>
     <li>
-        <a href="{{ path('persona_new') }}">
+        <a href="{{ path('admin_persona_new') }}">
             Create a new entry
         </a>
     </li>

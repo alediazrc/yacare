@@ -70,22 +70,38 @@
             <th>Nacionalidad</th>
             <td>{{ entity.Nacionalidad }}</td>
         </tr>
+        <tr>
+            <th>Version</th>
+            <td>{{ entity.Version }}</td>
+        </tr>
+        <tr>
+            <th>Timestamp</th>
+            <td>{{ entity.TimeStamp|date('Y-m-d H:i:s') }}</td>
+        </tr>
+        <tr>
+            <th>Createdat</th>
+            <td>{{ entity.CreatedAt|date('Y-m-d H:i:s') }}</td>
+        </tr>
+        <tr>
+            <th>Updatedat</th>
+            <td>{{ entity.UpdatedAt|date('Y-m-d H:i:s') }}</td>
+        </tr>
     </tbody>
 </table>
 
 <ul class="record_actions">
     <li>
-        <a href="{{ path('persona') }}">
+        <a href="{{ path('admin_persona') }}">
             Back to the list
         </a>
     </li>
     <li>
-        <a href="{{ path('persona_edit', { 'id': entity.id }) }}">
+        <a href="{{ path('admin_persona_edit', { 'id': entity.id }) }}">
             Edit
         </a>
     </li>
     <li>
-        <form action="{{ path('persona_delete', { 'id': entity.id }) }}" method="post">
+        <form action="{{ path('admin_persona_delete', { 'id': entity.id }) }}" method="post">
             {{ form_widget(delete_form) }}
             <button type="submit">Delete</button>
         </form>

@@ -13,14 +13,14 @@ use Yacare\BaseBundle\Form\PersonaType;
 /**
  * Persona controller.
  *
- * @Route("/persona")
+ * @Route("/admin/persona")
  */
 class PersonaController extends Controller
 {
     /**
      * Lists all Persona entities.
      *
-     * @Route("/", name="persona")
+     * @Route("/", name="admin_persona")
      * @Template()
      */
     public function indexAction()
@@ -37,7 +37,7 @@ class PersonaController extends Controller
     /**
      * Finds and displays a Persona entity.
      *
-     * @Route("/{id}/show", name="persona_show")
+     * @Route("/{id}/show", name="admin_persona_show")
      * @Template()
      */
     public function showAction($id)
@@ -61,7 +61,7 @@ class PersonaController extends Controller
     /**
      * Displays a form to create a new Persona entity.
      *
-     * @Route("/new", name="persona_new")
+     * @Route("/new", name="admin_persona_new")
      * @Template()
      */
     public function newAction()
@@ -78,7 +78,7 @@ class PersonaController extends Controller
     /**
      * Creates a new Persona entity.
      *
-     * @Route("/create", name="persona_create")
+     * @Route("/create", name="admin_persona_create")
      * @Method("POST")
      * @Template("YacareBaseBundle:Persona:new.html.twig")
      */
@@ -93,7 +93,7 @@ class PersonaController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('persona_show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('admin_persona_show', array('id' => $entity->getId())));
         }
 
         return array(
@@ -105,7 +105,7 @@ class PersonaController extends Controller
     /**
      * Displays a form to edit an existing Persona entity.
      *
-     * @Route("/{id}/edit", name="persona_edit")
+     * @Route("/{id}/edit", name="admin_persona_edit")
      * @Template()
      */
     public function editAction($id)
@@ -131,7 +131,7 @@ class PersonaController extends Controller
     /**
      * Edits an existing Persona entity.
      *
-     * @Route("/{id}/update", name="persona_update")
+     * @Route("/{id}/update", name="admin_persona_update")
      * @Method("POST")
      * @Template("YacareBaseBundle:Persona:edit.html.twig")
      */
@@ -153,7 +153,7 @@ class PersonaController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('persona_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('admin_persona_edit', array('id' => $id)));
         }
 
         return array(
@@ -166,7 +166,7 @@ class PersonaController extends Controller
     /**
      * Deletes a Persona entity.
      *
-     * @Route("/{id}/delete", name="persona_delete")
+     * @Route("/{id}/delete", name="admin_persona_delete")
      * @Method("POST")
      */
     public function deleteAction(Request $request, $id)
@@ -186,7 +186,7 @@ class PersonaController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('persona'));
+        return $this->redirect($this->generateUrl('admin_persona'));
     }
 
     private function createDeleteForm($id)
