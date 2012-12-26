@@ -13,6 +13,11 @@ yacare_base:
     type:     annotation
     prefix:   /admin/
 
+yacare_persona:
+    resource: "@YacareBaseBundle/Controller/"
+    type:     annotation
+    prefix:   /admin/persona/
+
 # Internal routing configuration to handle ESI
 #_internal:
 #    resource: "@FrameworkBundle/Resources/config/routing/internal.xml"
