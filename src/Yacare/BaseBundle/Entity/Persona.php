@@ -34,6 +34,15 @@ class Persona
         return $this->id;
     }
     
+    /**
+     * @ORM\OneToMany(targetEntity="\Yacare\RecursosHumanosBundle\Entity\Agente", mappedBy="Persona")
+     */
+    private $Agente;
+    
+    public function __construct()
+    {
+        $this->Agente = new ArrayCollection();
+    }
     
     /**
      * @var string $Apellido

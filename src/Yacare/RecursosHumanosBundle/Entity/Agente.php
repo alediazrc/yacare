@@ -5,12 +5,12 @@ namespace Yacare\RecursosHumanosBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Yacare\RecursosHumanosBundle\Entity\PersonaAgente
+ * Yacare\RecursosHumanosBundle\Entity\Agente
  *
  * @ORM\Table(name="PersonaAgente")
  * @ORM\Entity
  */
-class Agente extends \Yacare\BaseBundle\Entity\Persona
+class Agente
 {
     /**
      * @var integer $id
@@ -20,6 +20,12 @@ class Agente extends \Yacare\BaseBundle\Entity\Persona
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="\Yacare\BaseBundle\Entity\Persona", inversedBy="Agente")
+     * @ORM\JoinColumn(name="Persona", referencedColumnName="id")
+     */
+    protected $Persona;
 
     /**
      * @var integer $Legajo
