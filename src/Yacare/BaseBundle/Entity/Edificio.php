@@ -16,7 +16,7 @@ class Edificio
     /**
      * @ORM\OneToMany(targetEntity="Oficina", mappedBy="Edificio")
      */
-    protected $Oficina;
+    private $Oficina;
     
     public function __construct()
     {

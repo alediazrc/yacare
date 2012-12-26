@@ -32,7 +32,6 @@ class Oficina
         return $this->id;
     }
     
-    
     /**
      * @var string $Nombre
      *
@@ -45,13 +44,12 @@ class Oficina
      * @ORM\JoinColumn(name="Dependencia", referencedColumnName="id")
      */
     protected $Dependencia;
-
+    
     /**
-     * @var integer $Edificio
-     *
-     * @ORM\Column(name="Edificio", type="integer")
+     * @ORM\ManyToOne(targetEntity="Edificio", inversedBy="Oficina")
+     * @ORM\JoinColumn(name="Edificio", referencedColumnName="id")
      */
-    private $Edificio;
+    protected $Edificio;
 
     /**
      * @var boolean $Principal
@@ -59,8 +57,7 @@ class Oficina
      * @ORM\Column(name="Principal", type="boolean")
      */
     private $Principal;
-
-
+    
     /**
      * Set Nombre
      *
