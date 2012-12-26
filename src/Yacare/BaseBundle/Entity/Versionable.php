@@ -42,5 +42,3 @@ trait Versionable
         $this->TimeStamp = $TimeStamp;
     }
 }
-
-?>

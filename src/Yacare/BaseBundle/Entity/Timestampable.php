@@ -60,4 +60,3 @@ trait Timestampable
         $this->CpdatedAt = new \DateTime('now');
     }
 }
-?>

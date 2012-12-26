@@ -49,4 +49,3 @@ class TimestampableListener implements EventSubscriber
         return in_array('Yacare\BaseBundle\Entity\Timestampable', $traitNames);
     }
 }
-?>
