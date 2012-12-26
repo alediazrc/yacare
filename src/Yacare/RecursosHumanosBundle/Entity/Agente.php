@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Yacare\RecursosHumanosBundle\Entity\PersonaAgente
  *
- * @ORM\Table()
+ * @ORM\Table(name="PersonaAgente")
  * @ORM\Entity
  */
-class PersonaAgente
+class Agente extends \Yacare\BaseBundle\Entity\Persona
 {
     /**
      * @var integer $id
@@ -20,12 +20,6 @@ class PersonaAgente
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
-    /**
-     * @ORM\ManyToOne(targetEntity="\Yacare\BaseBundle\Entity\Persona", inversedBy="PersonaAgente")
-     * @ORM\JoinColumn(name="Persona", referencedColumnName="id")
-     */
-    protected $Persona;
 
     /**
      * @var integer $Legajo
