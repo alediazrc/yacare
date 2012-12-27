@@ -1,7 +1,7 @@
 yacare_recursos_humanos:
     resource: "@YacareRecursosHumanosBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /rrhh/
 
 yacare_inicio:
     resource: "@YacareInicioBundle/Controller/"
