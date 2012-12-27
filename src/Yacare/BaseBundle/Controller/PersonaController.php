@@ -13,7 +13,7 @@ use Yacare\BaseBundle\Form\PersonaType;
 /**
  * Persona controller.
  *
- * @Route("/admin/persona")
+ * @Route(name="/admin/persona")
  */
 class PersonaController extends Controller
 {

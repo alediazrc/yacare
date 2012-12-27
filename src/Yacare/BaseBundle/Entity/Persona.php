@@ -39,11 +39,6 @@ class Persona
      */
     private $Agente;
     
-    public function __construct()
-    {
-        $this->Agente = new ArrayCollection();
-    }
-    
     /**
      * @var string $Apellido
      *
@@ -155,8 +150,6 @@ class Persona
      * @ORM\Column(name="Nacionalidad", type="integer")
      */
     private $Nacionalidad;
-
-
 
     /**
      * Set Apellido
