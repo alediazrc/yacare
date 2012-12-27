@@ -14,7 +14,7 @@ trait Versionable
      * @var integer $Version
      *
      * @ORM\Column(name="Version", type="integer")
-     * @version
+     * @ORM\Version
      */
     private $Version;
 
@@ -22,7 +22,7 @@ trait Versionable
      * @var integer $TimeStamp
      *
      * @ORM\Column(name="TimeStamp", type="datetime")
-     * @version
+     * @ORM\Version
      */
     private $TimeStamp;
     
