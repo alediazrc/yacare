@@ -41,9 +41,8 @@ class Dependencia
     private $Nombre;
 
     /**
-     * @var integer $Parent
-     *
-     * @ORM\Column(name="Parent", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Yacare\BaseBundle\Entity\Dependencia")
+     * @ORM\JoinColumn(name="Parent", referencedColumnName="id", nullable=true)
      */
     private $Parent;
 

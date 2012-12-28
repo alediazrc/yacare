@@ -14,7 +14,8 @@ class DependenciaType extends AbstractType
             ->add('Nombre', null, array('label' => 'Nombre',))
             ->add('Parent', 'entity', array('label' => 'Depende de ',
                 'class' => 'YacareBaseBundle:Dependencia',
-                'required' => false,
+                'required' => true,
+                'empty_value' => false,
                 'property' => 'Nombre'))
         ;
     }

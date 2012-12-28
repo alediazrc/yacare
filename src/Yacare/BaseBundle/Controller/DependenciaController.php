@@ -16,10 +16,10 @@ use Yacare\BaseBundle\Form\DependenciaType;
 class DependenciaController extends Controller
 {
     /**
-     * @Route("inicio/")
+     * @Route("listar/")
      * @Template()
      */
-    public function indexAction()
+    public function listarAction()
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -36,7 +36,7 @@ class DependenciaController extends Controller
      * @Route("crear/", name="yacare_base_dependencia_crear")
      * @Template()
      */
-    public function editAction($id = null)
+    public function editarAction($id = null)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -46,7 +46,7 @@ class DependenciaController extends Controller
             $entity = new Dependencia();
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find entity.');
+            throw $this->createNotFoundException('No se puede encontrar la entidad.');
         }
 
         $editForm = $this->createForm(new DependenciaType(), $entity);
@@ -66,7 +66,7 @@ class DependenciaController extends Controller
      * @Method("POST")
      * @Template("YacareBaseBundle:Dependencia:edit.html.twig")
      */
-    public function updateAction(Request $request, $id=null)
+    public function guardarAction(Request $request, $id=null)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -76,7 +76,7 @@ class DependenciaController extends Controller
             $entity = new Dependencia();
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find entity.');
+            throw $this->createNotFoundException('No se puede encontrar la entidad.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -102,7 +102,7 @@ class DependenciaController extends Controller
      * @Route("eliminar/{id}")
      * @Method("POST")
      */
-    public function deleteAction(Request $request, $id)
+    public function eliminarAction(Request $request, $id)
     {
         $form = $this->createDeleteForm($id);
         $form->bind($request);
@@ -112,14 +112,14 @@ class DependenciaController extends Controller
             $entity = $em->getRepository('YacareBaseBundle:Dependencia')->find($id);
 
             if (!$entity) {
-                throw $this->createNotFoundException('Unable to find entity.');
+                throw $this->createNotFoundException('No se puede encontrar la entidad.');
             }
 
             $em->remove($entity);
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('dependencia/inicio'));
+        return $this->redirect($this->generateUrl('dependencia/listar'));
     }
 
     private function createDeleteForm($id)
