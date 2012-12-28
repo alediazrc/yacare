@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Edificio
 {
-    
     /**
      * @ORM\OneToMany(targetEntity="Oficina", mappedBy="Edificio")
      */
@@ -20,7 +19,7 @@ class Edificio
     
     public function __construct()
     {
-        $this->Oficina = new ArrayCollection();
+        $this->Oficina = new ORM\ArrayCollection();
     }
     
     /**

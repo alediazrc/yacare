@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Oficina
 {
-    use \Yacare\BaseBundle\Entity\Versionable;
     use \Yacare\BaseBundle\Entity\Timestampable;
     
     /**

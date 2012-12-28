@@ -5,7 +5,7 @@ namespace Yacare\BaseBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * EntidadVersionable
+ * Versionable
  *
  */
 trait Versionable
@@ -19,10 +19,9 @@ trait Versionable
     private $Version;
 
     /**
-     * @var integer $TimeStamp
+     * @var datetime $TimeStamp
      *
      * @ORM\Column(name="TimeStamp", type="datetime")
-     * @ORM\Version
      */
     private $TimeStamp;
     
