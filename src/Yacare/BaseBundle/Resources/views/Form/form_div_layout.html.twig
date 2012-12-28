@@ -1,0 +1,51 @@
+{% block form_widget %}
+{% spaceless %}
+    {% if compound %}
+        <fieldset>{{ block('form_widget_compound') }}</fieldset>
+    {% else %}
+        <fieldset>{{ block('form_widget_simple') }}</fieldset>
+    {% endif %}
+{% endspaceless %}
+{% endblock form_widget %}
+
+{% block field_row %}
+<div class="control-group">
+	<label class="control-label">{{ label|trans({}, translation_domain) }}</label>
+	<div class="controls">{{ form_widget(form) }}</div>
+</div>
+{% endblock field_row %}
+
+{% block form_label %}
+{% spaceless %}
+	{% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label')|trim}) %}
+    {% if not compound %}
+        {% set label_attr = label_attr|merge({'for': id}) %}
+    {% endif %}
+    {% if required %}
+        {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+    {% endif %}
+    {% if label is empty %}
+        {% set label = name|humanize %}
+    {% endif %}
+    <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain) }}</label>
+{% endspaceless %}
+{% endblock form_label %}
+
+{% block choice_widget_collapsed %}
+{% spaceless %}
+    <select data-rel="chosen" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
+        {% if empty_value is not none %}
+            <option value="">{{ empty_value|trans({}, translation_domain) }}</option>
+        {% endif %}
+        {% if preferred_choices|length > 0 %}
+            {% set options = preferred_choices %}
+            {{ block('choice_widget_options') }}
+            {% if choices|length > 0 and separator is not none %}
+                <option disabled="disabled">{{ separator }}</option>
+            {% endif %}
+        {% endif %}
+        {% set options = choices %}
+        {{ block('choice_widget_options') }}
+    </select>
+{% endspaceless %}
+{% endblock choice_widget_collapsed %}

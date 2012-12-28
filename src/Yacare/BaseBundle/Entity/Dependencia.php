@@ -16,13 +16,14 @@ class Dependencia
     /**
      * @ORM\OneToMany(targetEntity="Oficina", mappedBy="Dependencia")
      */
-    private $Oficina;
+    private $Oficinas;
     
     public function __construct()
     {
-        $this->Oficina = new ArrayCollection();
+        $this->Oficinas = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
+
     /**
      * @var integer $id
      *
@@ -42,7 +43,7 @@ class Dependencia
     /**
      * @var integer $Parent
      *
-     * @ORM\Column(name="Parent", type="integer")
+     * @ORM\Column(name="Parent", type="integer", nullable=true)
      */
     private $Parent;
 
