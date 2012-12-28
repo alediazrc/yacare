@@ -1,24 +1,16 @@
-yacare_recursos_humanos:
-    resource: "@YacareRecursosHumanosBundle/Controller/"
+yacare_base:
+    resource: "@YacareBaseBundle/Controller/"
     type:     annotation
-    prefix:   /rrhh/
+    prefix:   /admin/
 
 yacare_inicio:
     resource: "@YacareInicioBundle/Controller/"
     type:     annotation
     prefix:   /inicio/
 
-yacare_base:
-    resource: "@YacareBaseBundle/Controller/"
+yacare_recursos_humanos:
+    resource: "@YacareRecursosHumanosBundle/Controller/"
     type:     annotation
-    prefix:   /admin/
+    prefix:   /rrhh/
 
-yacare_persona:
-    resource: "@YacareBaseBundle/Controller/"
-    type:     annotation
-    prefix:   /admin/persona/
 
-# Internal routing configuration to handle ESI
-#_internal:
-#    resource: "@FrameworkBundle/Resources/config/routing/internal.xml"
-#    prefix:   /_internal
