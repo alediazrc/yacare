@@ -13,14 +13,14 @@ use Yacare\BaseBundle\Form\PersonaType;
 /**
  * Persona controller.
  *
- * @Route(name="/admin/persona")
+ * @Route("persona/")
  */
 class PersonaController extends Controller
 {
     /**
      * Lists all Persona entities.
      *
-     * @Route("/", name="admin_persona")
+     * @Route("inicio/")
      * @Template()
      */
     public function indexAction()
@@ -37,7 +37,7 @@ class PersonaController extends Controller
     /**
      * Finds and displays a Persona entity.
      *
-     * @Route("/{id}/show", name="admin_persona_show")
+     * @Route("{id}/show/")
      * @Template()
      */
     public function showAction($id)
@@ -61,7 +61,7 @@ class PersonaController extends Controller
     /**
      * Displays a form to create a new Persona entity.
      *
-     * @Route("/new", name="admin_persona_new")
+     * @Route("new/")
      * @Template()
      */
     public function newAction()
@@ -78,7 +78,7 @@ class PersonaController extends Controller
     /**
      * Creates a new Persona entity.
      *
-     * @Route("/create", name="admin_persona_create")
+     * @Route("create/")
      * @Method("POST")
      * @Template("YacareBaseBundle:Persona:new.html.twig")
      */
@@ -105,7 +105,7 @@ class PersonaController extends Controller
     /**
      * Displays a form to edit an existing Persona entity.
      *
-     * @Route("/{id}/edit", name="admin_persona_edit")
+     * @Route("{id}/edit/")
      * @Template()
      */
     public function editAction($id)
@@ -131,7 +131,7 @@ class PersonaController extends Controller
     /**
      * Edits an existing Persona entity.
      *
-     * @Route("/{id}/update", name="admin_persona_update")
+     * @Route("{id}/update/")
      * @Method("POST")
      * @Template("YacareBaseBundle:Persona:edit.html.twig")
      */
@@ -166,7 +166,7 @@ class PersonaController extends Controller
     /**
      * Deletes a Persona entity.
      *
-     * @Route("/{id}/delete", name="admin_persona_delete")
+     * @Route("{id}/delete/")
      * @Method("POST")
      */
     public function deleteAction(Request $request, $id)

@@ -91,17 +91,17 @@
 
 <ul class="record_actions">
     <li>
-        <a href="{{ path('admin_persona') }}">
+        <a href="{{ path('yacare_base_persona_index') }}">
             Back to the list
         </a>
     </li>
     <li>
-        <a href="{{ path('admin_persona_edit', { 'id': entity.id }) }}">
+        <a href="{{ path('yacare_base_persona_edit', { 'id': entity.id }) }}">
             Edit
         </a>
     </li>
     <li>
-        <form action="{{ path('admin_persona_delete', { 'id': entity.id }) }}" method="post">
+        <form action="{{ path('yacare_base_persona_delete', { 'id': entity.id }) }}" method="post">
             {{ form_widget(delete_form) }}
             <button type="submit">Delete</button>
         </form>
