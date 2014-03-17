@@ -1,6 +1,6 @@
 <?php
 
-namespace Yacare\SigemiBundle\Controller;
+namespace Yacare\MunirgBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Yacare\BaseBundle\Helper\StringHelper;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-
 /**
  * @Route("importar/")
  */
@@ -17,7 +16,7 @@ class ImportarController extends Controller
 {
     /**
      * @Route("partidas/")
-     * @Template("YacareSigemiBundle:Importar:importar.html.twig")
+     * @Template("YacareMunirgBundle:Importar:importar.html.twig")
      */
     public function importarPartidasAction(Request $request)
     {
@@ -230,7 +229,7 @@ WHERE rnum >" . $desde . "
     
     /**
      * @Route("personas/")
-     * @Template("YacareSigemiBundle:Importar:importar.html.twig")
+     * @Template("YacareMunirgBundle:Importar:importar.html.twig")
      */
     public function importarPersonasAction(Request $request, $desde = 0)
     {
@@ -519,7 +518,7 @@ WHERE rnum >" . $desde . "
     
     /**
      * @Route("calles/")
-     * @Template("YacareSigemiBundle:Importar:importar.html.twig")
+     * @Template("YacareMunirgBundle:Importar:importar.html.twig")
      */
     public function importarCallesAction()
     {
@@ -587,7 +586,7 @@ WHERE rnum >" . $desde . "
     
     /**
      * @Route("departamentos/")
-     * @Template("YacareSigemiBundle:Importar:importar.html.twig")
+     * @Template("YacareMunirgBundle:Importar:importar.html.twig")
      */
     public function importarDepartamentosAction()
     {
@@ -613,7 +612,9 @@ WHERE rnum >" . $desde . "
             ));
             
             if(!$entity) {
+                $nuevoId = $this->getDoctrine()->getManager()->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')->getSingleScalarResult();
                 $entity = new \Yacare\OrganizacionBundle\Entity\Departamento();
+                $entity->setId(++$nuevoId);
                 $entity->setNombre($nombreBueno);
                 $entity->setRango(30);
                 $entity->setImportSrc('rr_hh.secretarias');
@@ -644,7 +645,9 @@ WHERE rnum >" . $desde . "
             ));
             
             if(!$entity) {
+                $nuevoId = $this->getDoctrine()->getManager()->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')->getSingleScalarResult();
                 $entity = new \Yacare\OrganizacionBundle\Entity\Departamento();
+                $entity->setId(++$nuevoId);
                 $entity->setNombre($nombreBueno);
                 $entity->setRango(50);
                 $entity->setImportSrc('rr_hh.direcciones');
@@ -697,7 +700,7 @@ WHERE rnum >" . $desde . "
 
     /**
      * @Route("agentes/")
-     * @Template("YacareSigemiBundle:Importar:importar.html.twig")
+     * @Template("YacareMunirgBundle:Importar:importar.html.twig")
      */
     public function importarAgentesAction(Request $request)
     {
@@ -728,7 +731,11 @@ WHERE rnum >" . $desde . "
             
             if(!$entity) {
                 $entity = new \Yacare\RecursosHumanosBundle\Entity\Agente();
+                
+                // Asigno manualmente el ID
                 $entity->setId((int)($Row['legajo']));
+                $metadata = $em->getClassMetaData(get_class($entity));
+                $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
                 
                 $Persona = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
                     'DocumentoNumero' => trim($Row['nrodoc']),
@@ -796,7 +803,7 @@ WHERE rnum >" . $desde . "
             $em->flush();
             
             $importar_procesados++;
-            $log[] = $Row['legajo'] . ': ' . (string)$entity . ': ' . (string)$entity->getDepartamento();
+            $log[] = $Row['legajo'] . ': ' . (string)$entity . ' -- ' . (string)$entity->getDepartamento();
         }
         
         return array(
