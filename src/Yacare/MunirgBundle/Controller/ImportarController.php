@@ -103,11 +103,11 @@ SELECT tr3a100.tr3a100_id,
           JOIN TG06300
              ON (TG06300.TG06300_ID = tr3a100.TG06300_TG06300_ID)
           LEFT JOIN tr02100
-             ON (tr02100.tr02100_id = tr3a100\$rgr.tr02100_tr02100_id)
+             ON (tr02100.tr02100_id = tr3a100.tr02100_tr02100_id)
      WHERE tr3a100.estado='AL'
         AND tr3a100.lugar='RGR'
         AND tr02100.DEFINITIVO='D'
-        AND tr02100.IMPONIBLE_TIPO='OSA'
+        AND tr02100.IMPONIBLE_TIPO='INM'
 
      ORDER BY tr3a100.catastro_id
 ) a 
@@ -280,6 +280,7 @@ SELECT
     a.INDIVIDUO_TIPO,
     a.TG06300_TG06300_ID,
     a.TR02100_TR02100_ID,
+    a.TRIBUTARIA_ID,
     p.APELLIDOS Q_APELLIDOS,
     p.NOMBRES Q_NOMBRES,
     p.SEXO Q_SEXO,
@@ -308,14 +309,13 @@ FROM TG06100X a
     LEFT JOIN TG06110 p ON a.TG06100_ID = p.TG06100_TG06100_ID
     LEFT JOIN TG06120 j ON a.TG06100_ID = j.TG06100_TG06100_ID
     LEFT JOIN TG06300 d ON a.TG06300_TG06300_ID = d.TG06300_ID
-    JOIN TG06111 doc ON a.TG06100_ID = doc.TG06110_TG06100_TG06100_ID
+    LEFT JOIN TG06111 doc ON a.TG06100_ID = doc.TG06110_TG06100_TG06100_ID
     JOIN TR02100 imp ON a.TG06100_ID = imp.TIT_TG06100_ID
 WHERE a.BAJA_MOTIVO IS NULL
     AND a.NOMBRE<>'NN'
     AND imp.IMPONIBLE_TIPO='IND' AND imp.DEFINITIVO='D'
     AND d.LOCALIDAD='RIO GRANDE' 
     AND a.NOMBRE NOT LIKE '?%'
-    AND LENGTH(doc.DOCUMENTO_NRO) >= 5
 ORDER BY a.TG06100_ID
 
 ) a 
@@ -359,6 +359,17 @@ WHERE rnum >" . $desde . "
                 }
             }
             
+            if(!$Documento[1]) {
+                // No tengo documento, utilizo el campo TRIBUTARIA_ID
+                $Documento[0] = 'DNI';
+                $Partes = explode('-', $Documento[1]);
+                if(count($Partes) == 3) {
+                    $Documento[1] = (int)($Partes[1]);
+                } else {
+                    $Documento[1] = trim($Row['TRIBUTARIA_ID']);
+                }
+            }
+            
             if(!$Nombre && !$Apellido) {
                 $Apellido = StringHelper::Desoraclizar($Row['NOMBRE']);
             }
@@ -381,6 +392,8 @@ WHERE rnum >" . $desde . "
             $Row['TG06100_ID'] = (int)($Row['TG06100_ID']);
             
             // Arreglar errores conocidos
+            // O algunas calles que están duplicadas en SIGEMI (Isla Soledad con ids 85 y 354)
+            // y que en Yacaré ingresan una sola vez.
             if($Row['CODIGO_CALLE'] == 380) {
                 $Row['CODIGO_CALLE'] = null;            // No existe
             } else if($Row['CODIGO_CALLE'] == 384) {    // Santa María Dominga Mazzarello
@@ -417,6 +430,8 @@ WHERE rnum >" . $desde . "
                 $Row['CODIGO_CALLE'] = 67;
             } else if($Row['CODIGO_CALLE'] == 655) {    // Estrada
                 $Row['CODIGO_CALLE'] = 55;
+            } else if($Row['CODIGO_CALLE'] == 354) {    // Estrada
+                $Row['CODIGO_CALLE'] = 85;
             }
             
             
@@ -549,6 +564,9 @@ WHERE rnum >" . $desde . "
             
             if(!$entity) {
                 $entity = new \Yacare\CatastroBundle\Entity\Calle();
+                /* $entity->setId($Row['ID']);
+                $metadata = $em->getClassMetaData(get_class($entity));
+                $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE); */
                 $importar_importados++;
             } else {
                 $importar_actualizados++;
@@ -557,14 +575,14 @@ WHERE rnum >" . $desde . "
             $entity->setNombre($nombreBueno);
             $entity->setImportSrc('dbmunirg.TG06405');
             $entity->setImportId($Row['ID']);
-            $entity->setNombreOriginal($Row['NOMBRE']);
+            $entity->setNombreOriginal($Row['NOMBRE'] . '!!!');
 
             $em->persist($entity);
-            $em->flush();
             
             $importar_procesados++;
             $log[] = $Row['ID'] . ' ' . $nombreBueno;
         }
+        $em->flush();
         
         return array(
             'importar_importados' => $importar_importados,
