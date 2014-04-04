@@ -329,11 +329,8 @@ WHERE rnum >" . $desde . "
             $Nombre = StringHelper::Desoraclizar($Row['Q_NOMBRES']);
             $RazonSocial = StringHelper::Desoraclizar($Row['J_RAZON_SOCIAL']);
             $PersJur = false;
-
-            if($Documento[0] == 'CUIL' && 
-                    (substr($Documento[1], 0, 3) == '30-'
-                    || substr($Documento[1], 0, 3) == '33-')
-                    ) {
+            
+            if($Documento[0] == 'CUIL' && (substr($Documento[1], 0, 3) == '30-' || substr($Documento[1], 0, 3) == '33-')) {
                 $Documento[0] = 'CUIT';
                 $PersJur = true;
             }
@@ -345,8 +342,10 @@ WHERE rnum >" . $desde . "
             $Cuilt = '';
             if($Documento[0] == 'CUIL' || $Documento[0] == 'CUIT') {
                 $Cuilt = str_replace('-', '', $Documento[1]);
-                $Documento[0] = $Row['DOCUMENTO_TIPO'];
-                $Documento[1] = $Row['DOCUMENTO_NRO'];
+                if($Row['DOCUMENTO_TIPO'] && $Row['DOCUMENTO_NRO']) {
+                    $Documento[0] = $Row['DOCUMENTO_TIPO'];
+                    $Documento[1] = $Row['DOCUMENTO_NRO'];
+                }
             } else if($Row['DOCUMENTO_TIPO'] == 'CUIL' || $Row['DOCUMENTO_TIPO'] == 'CUIT') {
                 $Cuilt = str_replace('-', '', $Row['DOCUMENTO_NRO']);
             }
@@ -456,11 +455,6 @@ WHERE rnum >" . $desde . "
                 $entity = new \Yacare\BaseBundle\Entity\Persona();
                 $entity->setTg06100Id($Row['TG06100_ID']);
                 
-                $entity->setNombre($Nombre);
-                $entity->setApellido($Apellido);
-                //$entity->setRazonSocial($RazonSocial);
-                $entity->setPersonaJuridica($PersJur);
-                $entity->setDocumentoNumero($Documento[1]);
                 $entity->setDomicilioCodigoPostal('9420');
                 if($Row['CODIGO_CALLE']) {
                     $entity->setDomicilioCalle($em->getReference('YacareCatastroBundle:Calle', $Row['CODIGO_CALLE']));
@@ -488,7 +482,13 @@ WHERE rnum >" . $desde . "
                 //$entity->setRazonSocial($RazonSocial);
                 $importar_actualizados++;
             }
-            
+
+            $entity->setNombre($Nombre);
+            $entity->setApellido($Apellido);
+            $entity->setRazonSocial($RazonSocial);
+            $entity->setPersonaJuridica($PersJur);
+            $entity->setDocumentoNumero($Documento[1]);
+
             // Campos que se actualizan siempre
             $entity->setDocumentoTipo($TipoDocs[$Documento[0]]);
 
