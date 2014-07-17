@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Yacare\BaseBundle\Helper\StringHelper;
+use Tapir\BaseBundle\Helper\StringHelper;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -853,6 +853,6 @@ WHERE rnum >" . $desde . "
     
     
     protected function ConectarRrhh() {
-        return new \PDO('mysql:host=192.168.100.5;dbname=rr_hh;charset=utf8', 'yacare', '123456');
+        return new \PDO('mysql:host=192.168.100.5;dbname=rr_hh;charset=utf8', 'yacare', 'L1n4j3');
     }
 }
