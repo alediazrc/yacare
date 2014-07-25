@@ -130,7 +130,7 @@ WHERE rnum >" . $desde . "
                 'ImportId' => $Row['TR3A100_ID']
             )); */
 
-            if(!$entity) {
+            if (!$entity) {
                 $entity = $em->getRepository('YacareCatastroBundle:Partida')->findOneBy(array(
                     'Seccion' => $Seccion,
                     'Macizo' => $Macizo,
@@ -139,13 +139,13 @@ WHERE rnum >" . $desde . "
                 ));
             }
             
-            if(!$entity) {
+            if (!$entity) {
                 $entity = $em->getRepository('YacareCatastroBundle:Partida')->findOneBy(array(
                     'Numero' => (int)($Row['CATASTRO_ID'])
                 ));
             }
             
-            if(!$entity) {
+            if (!$entity) {
                 $entity = new \Yacare\CatastroBundle\Entity\Partida();
                 $entity->setSeccion($Seccion);
                 $entity->setMacizoAlfa($MacizoAlfa);
@@ -160,14 +160,14 @@ WHERE rnum >" . $desde . "
                 $importar_actualizados++;
             }
                 
-            if($entity && $Seccion) {
-                if($Row['CODIGO_CALLE']) {
+            if ($entity && $Seccion) {
+                if ($Row['CODIGO_CALLE']) {
                     $entity->setDomicilioCalle($em->getReference('YacareCatastroBundle:Calle', $Row['CODIGO_CALLE']));
                 }
                 
-                if($Row['ZONA_CURB']) {
+                if ($Row['ZONA_CURB']) {
                     $ZonaId = @$Zonas[$Row['ZONA_CURB']];
-                    if($ZonaId) {
+                    if ($ZonaId) {
                         $entity->setZona($em->getReference('YacareCatastroBundle:Zona', $ZonaId));
                     } else {
                         $entity->setZona(null);
@@ -176,12 +176,12 @@ WHERE rnum >" . $desde . "
                     $entity->setZona(null);
                 }
                 
-                if($Row['TIT_TG06100_ID']) {
+                if ($Row['TIT_TG06100_ID']) {
                     $titular = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
                         'Tg06100Id' => $Row['TIT_TG06100_ID']
                     ));
                     $entity->setTitular($titular);
-                    if($titular)
+                    if ($titular)
                         $log[] = "titular encontrado " . $Row['TIT_TG06100_ID'] . ': ' . $titular;
                     else
                         $log[] = "titular NO encontrado " . $Row['TIT_TG06100_ID'];
@@ -330,59 +330,59 @@ WHERE rnum >" . $desde . "
             $RazonSocial = StringHelper::Desoraclizar($Row['J_RAZON_SOCIAL']);
             $PersJur = false;
             
-            if($Documento[0] == 'CUIL' && (substr($Documento[1], 0, 3) == '30-' || substr($Documento[1], 0, 3) == '33-')) {
+            if ($Documento[0] == 'CUIL' && (substr($Documento[1], 0, 3) == '30-' || substr($Documento[1], 0, 3) == '33-')) {
                 $Documento[0] = 'CUIT';
                 $PersJur = true;
             }
             
-            if($Row['DOCUMENTO_TIPO'] == 'DU') {
+            if ($Row['DOCUMENTO_TIPO'] == 'DU') {
                 $Row['DOCUMENTO_TIPO'] = 'DNI';
             }
             
             $Cuilt = '';
-            if($Documento[0] == 'CUIL' || $Documento[0] == 'CUIT') {
+            if ($Documento[0] == 'CUIL' || $Documento[0] == 'CUIT') {
                 $Cuilt = str_replace('-', '', $Documento[1]);
-                if($Row['DOCUMENTO_TIPO'] && $Row['DOCUMENTO_NRO']) {
+                if ($Row['DOCUMENTO_TIPO'] && $Row['DOCUMENTO_NRO']) {
                     $Documento[0] = $Row['DOCUMENTO_TIPO'];
                     $Documento[1] = $Row['DOCUMENTO_NRO'];
                 }
-            } else if($Row['DOCUMENTO_TIPO'] == 'CUIL' || $Row['DOCUMENTO_TIPO'] == 'CUIT') {
+            } else if ($Row['DOCUMENTO_TIPO'] == 'CUIL' || $Row['DOCUMENTO_TIPO'] == 'CUIT') {
                 $Cuilt = str_replace('-', '', $Row['DOCUMENTO_NRO']);
             }
             
-            if($Documento[0] == 'CUIL') {
+            if ($Documento[0] == 'CUIL') {
                 $Partes = explode('-', $Documento[1]);
-                if(count($Partes) == 3) {
+                if (count($Partes) == 3) {
                     $Documento[0] = 'DNI';
                     $Documento[1] = (int)($Partes[1]);
                 }
             }
             
-            if(!$Documento[1]) {
+            if (!$Documento[1]) {
                 // No tengo documento, utilizo el campo TRIBUTARIA_ID
                 $Documento[0] = 'DNI';
                 $Partes = explode('-', $Documento[1]);
-                if(count($Partes) == 3) {
+                if (count($Partes) == 3) {
                     $Documento[1] = (int)($Partes[1]);
                 } else {
                     $Documento[1] = trim($Row['TRIBUTARIA_ID']);
                 }
             }
             
-            if(!$Nombre && !$Apellido) {
+            if (!$Nombre && !$Apellido) {
                 $Apellido = StringHelper::Desoraclizar($Row['NOMBRE']);
             }
             
-            if(!$Nombre && $Apellido && strpos($Apellido, '.') === false) {
+            if (!$Nombre && $Apellido && strpos($Apellido, '.') === false) {
                 $a = explode(' ', $Apellido, 2)[0];
                 $b = trim(substr($Apellido, strlen($a)));
                 $Nombre = $b;
                 $Apellido = $a;
             }
             
-            if($RazonSocial) {
+            if ($RazonSocial) {
                 $NombreVisible = $RazonSocial;
-            } else if($Nombre) {
+            } else if ($Nombre) {
                 $NombreVisible = $Apellido . ', ' . $Nombre;
             } else {
                 $NombreVisible = $Apellido;
@@ -393,43 +393,43 @@ WHERE rnum >" . $desde . "
             // Arreglar errores conocidos
             // O algunas calles que están duplicadas en SIGEMI (Isla Soledad con ids 85 y 354)
             // y que en Yacaré ingresan una sola vez.
-            if($Row['CODIGO_CALLE'] == 380) {
+            if ($Row['CODIGO_CALLE'] == 380) {
                 $Row['CODIGO_CALLE'] = null;            // No existe
-            } else if($Row['CODIGO_CALLE'] == 384) {    // Santa María Dominga Mazzarello
+            } else if ($Row['CODIGO_CALLE'] == 384) {    // Santa María Dominga Mazzarello
                 $Row['CODIGO_CALLE'] = 389;             // Este es el código correcto
-            } else if($Row['CODIGO_CALLE'] == 454) {    // Juana Manuela Gorriti
+            } else if ($Row['CODIGO_CALLE'] == 454) {    // Juana Manuela Gorriti
                 $Row['CODIGO_CALLE'] = 249;
-            } else if($Row['CODIGO_CALLE'] == 1482) {   // General Villegas
+            } else if ($Row['CODIGO_CALLE'] == 1482) {   // General Villegas
                 $Row['CODIGO_CALLE'] = 211;
-            } else if($Row['CODIGO_CALLE'] == 724) {    // Remolcador Guaraní
+            } else if ($Row['CODIGO_CALLE'] == 724) {    // Remolcador Guaraní
                 $Row['CODIGO_CALLE'] = 69;
-            } else if($Row['CODIGO_CALLE'] == 567) {    // Neuquén
+            } else if ($Row['CODIGO_CALLE'] == 567) {    // Neuquén
                 $Row['CODIGO_CALLE'] = 144;
-            } else if((int)($Row['CODIGO_CALLE']) == 0 || $Row['CODIGO_CALLE'] == 1748) {  // ???
+            } else if ((int)($Row['CODIGO_CALLE']) == 0 || $Row['CODIGO_CALLE'] == 1748) {  // ???
                 $Row['CODIGO_CALLE'] = null;
-            } else if($Row['CODIGO_CALLE'] == 1157) {   // 25 de Mayo
+            } else if ($Row['CODIGO_CALLE'] == 1157) {   // 25 de Mayo
                 $Row['CODIGO_CALLE'] = 224;
-            } else if($Row['CODIGO_CALLE'] == 474) {    // Rosales
+            } else if ($Row['CODIGO_CALLE'] == 474) {    // Rosales
                 $Row['CODIGO_CALLE'] = 174;
-            } else if($Row['CODIGO_CALLE'] == 3247) {   // Luis Garibaldi Honte
+            } else if ($Row['CODIGO_CALLE'] == 3247) {   // Luis Garibaldi Honte
                 $Row['CODIGO_CALLE'] = 285;
-            } else if($Row['CODIGO_CALLE'] == 1768) {   // Obispo Trejo
+            } else if ($Row['CODIGO_CALLE'] == 1768) {   // Obispo Trejo
                 $Row['CODIGO_CALLE'] = 294;
-            } else if($Row['CODIGO_CALLE'] == 1153) {   // José Hernández
+            } else if ($Row['CODIGO_CALLE'] == 1153) {   // José Hernández
                 $Row['CODIGO_CALLE'] = 90;
-            } else if($Row['CODIGO_CALLE'] == 1398 || $Row['CODIGO_CALLE'] == 1381) {   // Belisario Roldán
+            } else if ($Row['CODIGO_CALLE'] == 1398 || $Row['CODIGO_CALLE'] == 1381) {   // Belisario Roldán
                 $Row['CODIGO_CALLE'] = 173;
-            } else if($Row['CODIGO_CALLE'] == 1506) {   // Tomas Roldán
+            } else if ($Row['CODIGO_CALLE'] == 1506) {   // Tomas Roldán
                 $Row['CODIGO_CALLE'] = 53;
-            } else if($Row['CODIGO_CALLE'] == 718) {    // Libertad
+            } else if ($Row['CODIGO_CALLE'] == 718) {    // Libertad
                 $Row['CODIGO_CALLE'] = 116;
-            } else if($Row['CODIGO_CALLE'] == 1949) {   // Juan Bautista Thorne
+            } else if ($Row['CODIGO_CALLE'] == 1949) {   // Juan Bautista Thorne
                 $Row['CODIGO_CALLE'] = 197;
-            } else if($Row['CODIGO_CALLE'] == 857) {    // Gobernador Paz
+            } else if ($Row['CODIGO_CALLE'] == 857) {    // Gobernador Paz
                 $Row['CODIGO_CALLE'] = 67;
-            } else if($Row['CODIGO_CALLE'] == 655) {    // Estrada
+            } else if ($Row['CODIGO_CALLE'] == 655) {    // Estrada
                 $Row['CODIGO_CALLE'] = 55;
-            } else if($Row['CODIGO_CALLE'] == 354) {    // Estrada
+            } else if ($Row['CODIGO_CALLE'] == 354) {    // Estrada
                 $Row['CODIGO_CALLE'] = 85;
             }
             
@@ -438,25 +438,25 @@ WHERE rnum >" . $desde . "
                 'Tg06100Id' => $Row['TG06100_ID']
             ));
             
-            /* if($entity == null && $Cuilt) {
+            /* if ($entity == null && $Cuilt) {
                 $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
                     'Cuilt' => $Cuilt
                 ));
             } */
             
-            if($entity == null) {
+            if ($entity == null) {
                 $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
                     /* 'DocumentoTipo' => $TipoDocs[$Documento[0]], */
                     'DocumentoNumero' => $Documento[1]
                 ));
             }
             
-            if($entity == null) {
+            if ($entity == null) {
                 $entity = new \Yacare\BaseBundle\Entity\Persona();
                 $entity->setTg06100Id($Row['TG06100_ID']);
                 
                 $entity->setDomicilioCodigoPostal('9420');
-                if($Row['CODIGO_CALLE']) {
+                if ($Row['CODIGO_CALLE']) {
                     $entity->setDomicilioCalle($em->getReference('YacareCatastroBundle:Calle', $Row['CODIGO_CALLE']));
                 }
                 $entity->setDomicilioCalleNombre(StringHelper::Desoraclizar($Row['CALLE']));
@@ -465,13 +465,13 @@ WHERE rnum >" . $desde . "
                 $entity->setDomicilioPuerta($Row['DEPARTAMENTO']);
                 
                 // Si no está en el grupo Contribuyentes, lo agrego
-                if($entity->getGrupos()->contains($GrupoContribuyentes) == false) {
+                if ($entity->getGrupos()->contains($GrupoContribuyentes) == false) {
                     $entity->getGrupos()->add($GrupoContribuyentes);
                 }
-                if($Row['Q_SEXO'] == 'F') {
+                if ($Row['Q_SEXO'] == 'F') {
                     $entity->setGenero(1);
                 }
-                if($Cuilt) {
+                if ($Cuilt) {
                     $entity->setCuilt ($Cuilt);
                 }
             
@@ -498,7 +498,7 @@ WHERE rnum >" . $desde . "
             
             $em->flush();
 
-            if(($importar_procesados % 100) == 0) {
+            if (($importar_procesados % 100) == 0) {
                 ob_flush();
                 flush();
                 
@@ -556,13 +556,13 @@ WHERE rnum >" . $desde . "
                 'ImportId' => $Row['ID']
              ));
             
-            if(!$entity) {
+            if (!$entity) {
                 $entity = $em->getRepository('YacareCatastroBundle:Calle')->findOneBy(array(
                     'Nombre' => $nombreBueno
                 ));
             }
             
-            if(!$entity) {
+            if (!$entity) {
                 $entity = new \Yacare\CatastroBundle\Entity\Calle();
                 /* $entity->setId($Row['ID']);
                 $metadata = $em->getClassMetaData(get_class($entity));
@@ -629,7 +629,7 @@ WHERE rnum >" . $desde . "
                 'ImportId' => $Row['codigo']
             ));
             
-            if(!$entity) {
+            if (!$entity) {
                 $nuevoId = $this->getDoctrine()->getManager()->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')->getSingleScalarResult();
                 $entity = new \Yacare\OrganizacionBundle\Entity\Departamento();
                 $entity->setId(++$nuevoId);
@@ -644,7 +644,7 @@ WHERE rnum >" . $desde . "
             }
 
             $entity->setParentNode($Ejecutivo);
-            if($Row['fecha_baja']) {
+            if ($Row['fecha_baja']) {
                 $entity->setSuprimido(true);
             }
             
@@ -662,7 +662,7 @@ WHERE rnum >" . $desde . "
                 'ImportId' => $Row['secretaria'] . '.' . $Row['direccion']
             ));
             
-            if(!$entity) {
+            if (!$entity) {
                 $nuevoId = $this->getDoctrine()->getManager()->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')->getSingleScalarResult();
                 $entity = new \Yacare\OrganizacionBundle\Entity\Departamento();
                 $entity->setId(++$nuevoId);
@@ -682,7 +682,7 @@ WHERE rnum >" . $desde . "
             ));
             $entity->setParentNode($Secre);
             
-            if($Row['fecha_baja']) {
+            if ($Row['fecha_baja']) {
                 $entity->setSuprimido(true);
             }
 
@@ -747,7 +747,7 @@ WHERE rnum >" . $desde . "
                 'ImportId' => $Row['legajo']
             ));
             
-            if(!$entity) {
+            if (!$entity) {
                 $entity = new \Yacare\RecursosHumanosBundle\Entity\Agente();
                 
                 // Asigno manualmente el ID
@@ -759,14 +759,14 @@ WHERE rnum >" . $desde . "
                     'DocumentoNumero' => trim($Row['nrodoc']),
                 ));
                 
-                if(!$Persona) {
+                if (!$Persona) {
                     $Persona = new \Yacare\BaseBundle\Entity\Persona();
                     $Persona->setDocumentoNumero($Row['nrodoc']);
                     $Persona->setDocumentoTipo((int)$Row['tipodoc']);
                 }
                 $Persona->setNombre(StringHelper::Desoraclizar($Row['name']));
                 $Persona->setApellido(StringHelper::Desoraclizar($Row['lastname']));
-                if($Row['fechanacim']) {
+                if ($Row['fechanacim']) {
                     $Persona->setFechaNacimiento(new \DateTime($Row['fechanacim']));
                 }
                 $Persona->setTelefonoNumero(trim(str_ireplace('NO DECLARA', '', $Row['telefono']) . ' ' . str_ireplace('NO DECLARA', '', $Row['celular'])));
@@ -798,18 +798,18 @@ WHERE rnum >" . $desde . "
             }
 
             // Si no está en el grupo agentes, lo agrego
-            if($Persona->getGrupos()->contains($GrupoAgentes) == false) {
+            if ($Persona->getGrupos()->contains($GrupoAgentes) == false) {
                 $Persona->getGrupos()->add($GrupoAgentes);
                 $em->persist($Persona);
             }
 
-            if($Row['fechaingre']) {
+            if ($Row['fechaingre']) {
                 $entity->setFechaIngreso(new \DateTime($Row['fechaingre']));
             } else {
                 $entity->setFechaIngreso(null);
             }                
 
-            if($Row['fechabaja']) {
+            if ($Row['fechabaja']) {
                 $entity->setFechaBaja(new \DateTime($Row['fechabaja']));
                 $entity->setSuprimido(true);
             } else {
