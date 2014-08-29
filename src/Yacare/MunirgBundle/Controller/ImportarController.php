@@ -1,5 +1,4 @@
 <?php
-
 namespace Yacare\MunirgBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -14,15 +13,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class ImportarController extends Controller
 {
+
     /**
      * @Route("partidas/")
      * @Template("YacareMunirgBundle:Importar:importar.html.twig")
      */
     public function importarPartidasAction(Request $request)
     {
-        //DELETE FROM Catastro_Partida WHERE id NOT IN (SELECT DISTINCT Partida_id FROM Inspeccion_RelevamientoAsignacionDetalle);
-        
-        $desde = (int)($request->query->get('desde'));
+        // DELETE FROM Catastro_Partida WHERE id NOT IN (SELECT DISTINCT Partida_id FROM Inspeccion_RelevamientoAsignacionDetalle);
+        $desde = (int) ($request->query->get('desde'));
         $cant = 500;
         
         mb_internal_encoding('UTF-8');
@@ -58,9 +57,9 @@ class ImportarController extends Controller
             // Estos no existen en el anexo 6 de planificación territorial
             'ZEIA' => null,
             'ZEIS' => null,
-            'ZEIU' => null,
+            'ZEIU' => null
         );
-
+        
         $Dbmunirg = $this->ConectarOracle();
         
         $em = $this->getDoctrine()->getManager();
@@ -114,7 +113,7 @@ SELECT tr3a100.tr3a100_id,
     WHERE ROWNUM <=" . ($desde + $cant) . ")
 WHERE rnum >" . $desde . "
 ";
-        foreach($Dbmunirg->query($sql) as $Row) {
+        foreach ($Dbmunirg->query($sql) as $Row) {
             $Seccion = strtoupper(trim($Row['SECCION'], ' .'));
             $MacizoNum = trim($Row['MACIZO_NUM'], ' .');
             $MacizoAlfa = trim($Row['MACIZO_ALFA'], ' .');
@@ -122,30 +121,29 @@ WHERE rnum >" . $desde . "
             $ParcelaAlfa = trim($Row['PARCELA_ALFA'], ' .');
             $Macizo = trim($MacizoNum . $MacizoAlfa);
             $Parcela = trim($ParcelaNum . $ParcelaAlfa);
-            $UnidadFuncional = (int)($Row['UNID_FUNC']);
+            $UnidadFuncional = (int) ($Row['UNID_FUNC']);
             
             $entity = null;
-            /* $entity = $em->getRepository('YacareCatastroBundle:Partida')->findOneBy(array(
-                'ImportSrc' => 'dbmunirg.TR3A100',
-                'ImportId' => $Row['TR3A100_ID']
-            )); */
-
-            if (!$entity) {
+            /*
+             * $entity = $em->getRepository('YacareCatastroBundle:Partida')->findOneBy(array( 'ImportSrc' => 'dbmunirg.TR3A100', 'ImportId' => $Row['TR3A100_ID'] ));
+             */
+            
+            if (! $entity) {
                 $entity = $em->getRepository('YacareCatastroBundle:Partida')->findOneBy(array(
                     'Seccion' => $Seccion,
                     'Macizo' => $Macizo,
                     'Parcela' => $Parcela,
-                    'UnidadFuncional' => $UnidadFuncional,
+                    'UnidadFuncional' => $UnidadFuncional
                 ));
             }
             
-            if (!$entity) {
+            if (! $entity) {
                 $entity = $em->getRepository('YacareCatastroBundle:Partida')->findOneBy(array(
-                    'Numero' => (int)($Row['CATASTRO_ID'])
+                    'Numero' => (int) ($Row['CATASTRO_ID'])
                 ));
             }
             
-            if (!$entity) {
+            if (! $entity) {
                 $entity = new \Yacare\CatastroBundle\Entity\Partida();
                 $entity->setSeccion($Seccion);
                 $entity->setMacizoAlfa($MacizoAlfa);
@@ -155,11 +153,11 @@ WHERE rnum >" . $desde . "
                 $entity->setParcelaNum($ParcelaNum);
                 $entity->setParcela($Parcela);
                 
-                $importar_importados++;
+                $importar_importados ++;
             } else {
-                $importar_actualizados++;
+                $importar_actualizados ++;
             }
-                
+            
             if ($entity && $Seccion) {
                 if ($Row['CODIGO_CALLE']) {
                     $entity->setDomicilioCalle($em->getReference('YacareCatastroBundle:Calle', $Row['CODIGO_CALLE']));
@@ -189,23 +187,23 @@ WHERE rnum >" . $desde . "
                     $log[] = "*** Sin titular " . $Row['TIT_TG06100_ID'];
                     $entity->setTitular(null);
                 }
-
+                
                 $entity->setUnidadFuncional($UnidadFuncional);
-                $entity->setDomicilioNumero((int)($Row['NUMERO']));
+                $entity->setDomicilioNumero((int) ($Row['NUMERO']));
                 $entity->setDomicilioPiso(trim($Row['PISO']));
                 $entity->setDomicilioPuerta(trim($Row['DEPARTAMENTO']));
-                $entity->setLegajo((int)($Row['LEGAJO']));
-                $entity->setNumero((int)($Row['CATASTRO_ID']));
-
-                //$entity->setImportSrc('dbmunirg.TR3A100');
-                //$entity->setImportId($Row['TR3A100_ID']);
-
+                $entity->setLegajo((int) ($Row['LEGAJO']));
+                $entity->setNumero((int) ($Row['CATASTRO_ID']));
+                
+                // $entity->setImportSrc('dbmunirg.TR3A100');
+                // $entity->setImportId($Row['TR3A100_ID']);
+                
                 $em->persist($entity);
                 $em->flush();
-                //$log[] = $Row['CATASTRO_ID'] . " SMP($Seccion-$Macizo-$Parcela-$UnidadFuncional) ${Row['CALLE']} #${Row['NUMERO']} --- " . $entity->getTitular();
+                // $log[] = $Row['CATASTRO_ID'] . " SMP($Seccion-$Macizo-$Parcela-$UnidadFuncional) ${Row['CALLE']} #${Row['NUMERO']} --- " . $entity->getTitular();
             }
             
-            $importar_procesados++;
+            $importar_procesados ++;
         }
         
         $em->getConnection()->commit();
@@ -216,24 +214,16 @@ WHERE rnum >" . $desde . "
             'importar_procesados' => $importar_procesados,
             'redir_desde' => ($importar_procesados == $cant ? $desde + $cant : 0),
             'log' => $log
-            );
+        );
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * @Route("personas/")
      * @Template("YacareMunirgBundle:Importar:importar.html.twig")
      */
     public function importarPersonasAction(Request $request, $desde = 0)
     {
-        $desde = (int)($request->query->get('desde'));
+        $desde = (int) ($request->query->get('desde'));
         $cant = 500;
         
         mb_internal_encoding('UTF-8');
@@ -249,11 +239,11 @@ WHERE rnum >" . $desde . "
             'CI' => 4,
             'PAS' => 5,
             'CUIL' => 98,
-            'CUIT' => 99,
+            'CUIT' => 99
         );
         
         $Dbmunirg = $this->ConectarOracle();
-
+        
         $em = $this->getDoctrine()->getManager();
         $em->getConnection()->beginTransaction();
         
@@ -323,7 +313,7 @@ ORDER BY a.TG06100_ID
 WHERE rnum >" . $desde . "
 ";
         
-        foreach($Dbmunirg->query($sql) as $Row) {
+        foreach ($Dbmunirg->query($sql) as $Row) {
             $Documento = StringHelper::ObtenerDocumento($Row['IND_IDENTIFICACION']);
             $Apellido = StringHelper::Desoraclizar($Row['Q_APELLIDOS']);
             $Nombre = StringHelper::Desoraclizar($Row['Q_NOMBRES']);
@@ -346,34 +336,35 @@ WHERE rnum >" . $desde . "
                     $Documento[0] = $Row['DOCUMENTO_TIPO'];
                     $Documento[1] = $Row['DOCUMENTO_NRO'];
                 }
-            } else if ($Row['DOCUMENTO_TIPO'] == 'CUIL' || $Row['DOCUMENTO_TIPO'] == 'CUIT') {
-                $Cuilt = str_replace('-', '', $Row['DOCUMENTO_NRO']);
-            }
+            } else 
+                if ($Row['DOCUMENTO_TIPO'] == 'CUIL' || $Row['DOCUMENTO_TIPO'] == 'CUIT') {
+                    $Cuilt = str_replace('-', '', $Row['DOCUMENTO_NRO']);
+                }
             
             if ($Documento[0] == 'CUIL') {
                 $Partes = explode('-', $Documento[1]);
                 if (count($Partes) == 3) {
                     $Documento[0] = 'DNI';
-                    $Documento[1] = (int)($Partes[1]);
+                    $Documento[1] = (int) ($Partes[1]);
                 }
             }
             
-            if (!$Documento[1]) {
+            if (! $Documento[1]) {
                 // No tengo documento, utilizo el campo TRIBUTARIA_ID
                 $Documento[0] = 'DNI';
                 $Partes = explode('-', $Documento[1]);
                 if (count($Partes) == 3) {
-                    $Documento[1] = (int)($Partes[1]);
+                    $Documento[1] = (int) ($Partes[1]);
                 } else {
                     $Documento[1] = trim($Row['TRIBUTARIA_ID']);
                 }
             }
             
-            if (!$Nombre && !$Apellido) {
+            if (! $Nombre && ! $Apellido) {
                 $Apellido = StringHelper::Desoraclizar($Row['NOMBRE']);
             }
             
-            if (!$Nombre && $Apellido && strpos($Apellido, '.') === false) {
+            if (! $Nombre && $Apellido && strpos($Apellido, '.') === false) {
                 $a = explode(' ', $Apellido, 2)[0];
                 $b = trim(substr($Apellido, strlen($a)));
                 $Nombre = $b;
@@ -382,67 +373,83 @@ WHERE rnum >" . $desde . "
             
             if ($RazonSocial) {
                 $NombreVisible = $RazonSocial;
-            } else if ($Nombre) {
-                $NombreVisible = $Apellido . ', ' . $Nombre;
-            } else {
-                $NombreVisible = $Apellido;
-            }
+            } else 
+                if ($Nombre) {
+                    $NombreVisible = $Apellido . ', ' . $Nombre;
+                } else {
+                    $NombreVisible = $Apellido;
+                }
             
-            $Row['TG06100_ID'] = (int)($Row['TG06100_ID']);
+            $Row['TG06100_ID'] = (int) ($Row['TG06100_ID']);
             
             // Arreglar errores conocidos
             // O algunas calles que están duplicadas en SIGEMI (Isla Soledad con ids 85 y 354)
             // y que en Yacaré ingresan una sola vez.
             if ($Row['CODIGO_CALLE'] == 380) {
-                $Row['CODIGO_CALLE'] = null;            // No existe
-            } else if ($Row['CODIGO_CALLE'] == 384) {    // Santa María Dominga Mazzarello
-                $Row['CODIGO_CALLE'] = 389;             // Este es el código correcto
-            } else if ($Row['CODIGO_CALLE'] == 454) {    // Juana Manuela Gorriti
-                $Row['CODIGO_CALLE'] = 249;
-            } else if ($Row['CODIGO_CALLE'] == 1482) {   // General Villegas
-                $Row['CODIGO_CALLE'] = 211;
-            } else if ($Row['CODIGO_CALLE'] == 724) {    // Remolcador Guaraní
-                $Row['CODIGO_CALLE'] = 69;
-            } else if ($Row['CODIGO_CALLE'] == 567) {    // Neuquén
-                $Row['CODIGO_CALLE'] = 144;
-            } else if ((int)($Row['CODIGO_CALLE']) == 0 || $Row['CODIGO_CALLE'] == 1748) {  // ???
-                $Row['CODIGO_CALLE'] = null;
-            } else if ($Row['CODIGO_CALLE'] == 1157) {   // 25 de Mayo
-                $Row['CODIGO_CALLE'] = 224;
-            } else if ($Row['CODIGO_CALLE'] == 474) {    // Rosales
-                $Row['CODIGO_CALLE'] = 174;
-            } else if ($Row['CODIGO_CALLE'] == 3247) {   // Luis Garibaldi Honte
-                $Row['CODIGO_CALLE'] = 285;
-            } else if ($Row['CODIGO_CALLE'] == 1768) {   // Obispo Trejo
-                $Row['CODIGO_CALLE'] = 294;
-            } else if ($Row['CODIGO_CALLE'] == 1153) {   // José Hernández
-                $Row['CODIGO_CALLE'] = 90;
-            } else if ($Row['CODIGO_CALLE'] == 1398 || $Row['CODIGO_CALLE'] == 1381) {   // Belisario Roldán
-                $Row['CODIGO_CALLE'] = 173;
-            } else if ($Row['CODIGO_CALLE'] == 1506) {   // Tomas Roldán
-                $Row['CODIGO_CALLE'] = 53;
-            } else if ($Row['CODIGO_CALLE'] == 718) {    // Libertad
-                $Row['CODIGO_CALLE'] = 116;
-            } else if ($Row['CODIGO_CALLE'] == 1949) {   // Juan Bautista Thorne
-                $Row['CODIGO_CALLE'] = 197;
-            } else if ($Row['CODIGO_CALLE'] == 857) {    // Gobernador Paz
-                $Row['CODIGO_CALLE'] = 67;
-            } else if ($Row['CODIGO_CALLE'] == 655) {    // Estrada
-                $Row['CODIGO_CALLE'] = 55;
-            } else if ($Row['CODIGO_CALLE'] == 354) {    // Estrada
-                $Row['CODIGO_CALLE'] = 85;
-            }
-            
+                $Row['CODIGO_CALLE'] = null; // No existe
+            } else 
+                if ($Row['CODIGO_CALLE'] == 384) { // Santa María Dominga Mazzarello
+                    $Row['CODIGO_CALLE'] = 389; // Este es el código correcto
+                } else 
+                    if ($Row['CODIGO_CALLE'] == 454) { // Juana Manuela Gorriti
+                        $Row['CODIGO_CALLE'] = 249;
+                    } else 
+                        if ($Row['CODIGO_CALLE'] == 1482) { // General Villegas
+                            $Row['CODIGO_CALLE'] = 211;
+                        } else 
+                            if ($Row['CODIGO_CALLE'] == 724) { // Remolcador Guaraní
+                                $Row['CODIGO_CALLE'] = 69;
+                            } else 
+                                if ($Row['CODIGO_CALLE'] == 567) { // Neuquén
+                                    $Row['CODIGO_CALLE'] = 144;
+                                } else 
+                                    if ((int) ($Row['CODIGO_CALLE']) == 0 || $Row['CODIGO_CALLE'] == 1748) { // ???
+                                        $Row['CODIGO_CALLE'] = null;
+                                    } else 
+                                        if ($Row['CODIGO_CALLE'] == 1157) { // 25 de Mayo
+                                            $Row['CODIGO_CALLE'] = 224;
+                                        } else 
+                                            if ($Row['CODIGO_CALLE'] == 474) { // Rosales
+                                                $Row['CODIGO_CALLE'] = 174;
+                                            } else 
+                                                if ($Row['CODIGO_CALLE'] == 3247) { // Luis Garibaldi Honte
+                                                    $Row['CODIGO_CALLE'] = 285;
+                                                } else 
+                                                    if ($Row['CODIGO_CALLE'] == 1768) { // Obispo Trejo
+                                                        $Row['CODIGO_CALLE'] = 294;
+                                                    } else 
+                                                        if ($Row['CODIGO_CALLE'] == 1153) { // José Hernández
+                                                            $Row['CODIGO_CALLE'] = 90;
+                                                        } else 
+                                                            if ($Row['CODIGO_CALLE'] == 1398 || $Row['CODIGO_CALLE'] == 1381) { // Belisario Roldán
+                                                                $Row['CODIGO_CALLE'] = 173;
+                                                            } else 
+                                                                if ($Row['CODIGO_CALLE'] == 1506) { // Tomas Roldán
+                                                                    $Row['CODIGO_CALLE'] = 53;
+                                                                } else 
+                                                                    if ($Row['CODIGO_CALLE'] == 718) { // Libertad
+                                                                        $Row['CODIGO_CALLE'] = 116;
+                                                                    } else 
+                                                                        if ($Row['CODIGO_CALLE'] == 1949) { // Juan Bautista Thorne
+                                                                            $Row['CODIGO_CALLE'] = 197;
+                                                                        } else 
+                                                                            if ($Row['CODIGO_CALLE'] == 857) { // Gobernador Paz
+                                                                                $Row['CODIGO_CALLE'] = 67;
+                                                                            } else 
+                                                                                if ($Row['CODIGO_CALLE'] == 655) { // Estrada
+                                                                                    $Row['CODIGO_CALLE'] = 55;
+                                                                                } else 
+                                                                                    if ($Row['CODIGO_CALLE'] == 354) { // Estrada
+                                                                                        $Row['CODIGO_CALLE'] = 85;
+                                                                                    }
             
             $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
                 'Tg06100Id' => $Row['TG06100_ID']
             ));
             
-            /* if ($entity == null && $Cuilt) {
-                $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
-                    'Cuilt' => $Cuilt
-                ));
-            } */
+            /*
+             * if ($entity == null && $Cuilt) { $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array( 'Cuilt' => $Cuilt )); }
+             */
             
             if ($entity == null) {
                 $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
@@ -472,32 +479,31 @@ WHERE rnum >" . $desde . "
                     $entity->setGenero(1);
                 }
                 if ($Cuilt) {
-                    $entity->setCuilt ($Cuilt);
+                    $entity->setCuilt($Cuilt);
                 }
-            
+                
                 $em->persist($entity);
-                $importar_importados++;
+                $importar_importados ++;
             } else {
                 $entity->setTg06100Id($Row['TG06100_ID']);
-                //$entity->setRazonSocial($RazonSocial);
-                $importar_actualizados++;
+                // $entity->setRazonSocial($RazonSocial);
+                $importar_actualizados ++;
             }
-
+            
             $entity->setNombre($Nombre);
             $entity->setApellido($Apellido);
             $entity->setRazonSocial($RazonSocial);
             $entity->setPersonaJuridica($PersJur);
             $entity->setDocumentoNumero($Documento[1]);
-
+            
             // Campos que se actualizan siempre
             $entity->setDocumentoTipo($TipoDocs[$Documento[0]]);
-
-
+            
             $log[] = $Cuilt . ' / ' . $Documento[0] . ' ' . $Documento[1] . ': ' . $NombreVisible . "\r\n";
-            $importar_procesados++;
+            $importar_procesados ++;
             
             $em->flush();
-
+            
             if (($importar_procesados % 100) == 0) {
                 ob_flush();
                 flush();
@@ -518,19 +524,9 @@ WHERE rnum >" . $desde . "
             'importar_procesados' => $importar_procesados,
             'redir_desde' => ($importar_procesados == $cant ? $desde + $cant : 0),
             'log' => $log
-            );
+        );
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * @Route("calles/")
      * @Template("YacareMunirgBundle:Importar:importar.html.twig")
@@ -541,45 +537,45 @@ WHERE rnum >" . $desde . "
         ini_set('display_errors', 1);
         
         $em = $this->getDoctrine()->getManager();
-
+        
         $Dbmunirg = $this->ConectarOracle();
         
         $importar_importados = 0;
         $importar_actualizados = 0;
         $importar_procesados = 0;
         $log = array();
-        foreach($Dbmunirg->query('SELECT CODIGO_CALLE AS id, CALLE AS Nombre FROM TG06405 WHERE TG06403_TG06403_ID=410') as $Row) {
+        foreach ($Dbmunirg->query('SELECT CODIGO_CALLE AS id, CALLE AS Nombre FROM TG06405 WHERE TG06403_TG06403_ID=410') as $Row) {
             $nombreBueno = StringHelper::Desoraclizar($Row['NOMBRE']);
             
             $entity = $em->getRepository('YacareCatastroBundle:Calle')->findOneBy(array(
                 'ImportSrc' => 'dbmunirg.TG06405',
                 'ImportId' => $Row['ID']
-             ));
+            ));
             
-            if (!$entity) {
+            if (! $entity) {
                 $entity = $em->getRepository('YacareCatastroBundle:Calle')->findOneBy(array(
                     'Nombre' => $nombreBueno
                 ));
             }
             
-            if (!$entity) {
+            if (! $entity) {
                 $entity = new \Yacare\CatastroBundle\Entity\Calle();
-                /* $entity->setId($Row['ID']);
-                $metadata = $em->getClassMetaData(get_class($entity));
-                $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE); */
-                $importar_importados++;
+                /*
+                 * $entity->setId($Row['ID']); $metadata = $em->getClassMetaData(get_class($entity)); $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+                 */
+                $importar_importados ++;
             } else {
-                $importar_actualizados++;
+                $importar_actualizados ++;
             }
             
             $entity->setNombre($nombreBueno);
             $entity->setImportSrc('dbmunirg.TG06405');
             $entity->setImportId($Row['ID']);
             $entity->setNombreOriginal($Row['NOMBRE'] . '!!!');
-
+            
             $em->persist($entity);
             
-            $importar_procesados++;
+            $importar_procesados ++;
             $log[] = $Row['ID'] . ' ' . $nombreBueno;
         }
         $em->flush();
@@ -589,19 +585,9 @@ WHERE rnum >" . $desde . "
             'importar_actualizados' => $importar_actualizados,
             'importar_procesados' => $importar_procesados,
             'log' => $log
-            );
+        );
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
      * @Route("departamentos/")
      * @Template("YacareMunirgBundle:Importar:importar.html.twig")
@@ -612,7 +598,7 @@ WHERE rnum >" . $desde . "
         ini_set('display_errors', 1);
         
         $em = $this->getDoctrine()->getManager();
-
+        
         $DbRecursos = $this->ConectarRrhh();
         
         $importar_importados = 0;
@@ -621,28 +607,31 @@ WHERE rnum >" . $desde . "
         $log = array();
         
         $Ejecutivo = $em->getRepository('YacareOrganizacionBundle:Departamento')->find(1);
-
-        foreach($DbRecursos->query('SELECT * FROM secretarias WHERE codigo<>999') as $Row) {
+        
+        foreach ($DbRecursos->query('SELECT * FROM secretarias WHERE codigo<>999') as $Row) {
             $nombreBueno = StringHelper::Desoraclizar($Row['detalle']);
             $entity = $em->getRepository('YacareOrganizacionBundle:Departamento')->findOneBy(array(
                 'ImportSrc' => 'rr_hh.secretarias',
                 'ImportId' => $Row['codigo']
             ));
             
-            if (!$entity) {
-                $nuevoId = $this->getDoctrine()->getManager()->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')->getSingleScalarResult();
+            if (! $entity) {
+                $nuevoId = $this->getDoctrine()
+                    ->getManager()
+                    ->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')
+                    ->getSingleScalarResult();
                 $entity = new \Yacare\OrganizacionBundle\Entity\Departamento();
-                $entity->setId(++$nuevoId);
+                $entity->setId(++ $nuevoId);
                 $entity->setNombre($nombreBueno);
                 $entity->setRango(30);
                 $entity->setImportSrc('rr_hh.secretarias');
                 $entity->setImportId($Row['codigo']);
-
-                $importar_importados++;
+                
+                $importar_importados ++;
             } else {
-                $importar_actualizados++;
+                $importar_actualizados ++;
             }
-
+            
             $entity->setParentNode($Ejecutivo);
             if ($Row['fecha_baja']) {
                 $entity->setSuprimido(true);
@@ -651,31 +640,34 @@ WHERE rnum >" . $desde . "
             $em->persist($entity);
             $em->flush();
             
-            $importar_procesados++;
+            $importar_procesados ++;
             $log[] = 'Secretaría ' . $Row['codigo'] . ' ' . $nombreBueno;
         }
         
-        foreach($DbRecursos->query('SELECT * FROM direcciones WHERE secretaria<>999') as $Row) {
+        foreach ($DbRecursos->query('SELECT * FROM direcciones WHERE secretaria<>999') as $Row) {
             $nombreBueno = StringHelper::Desoraclizar($Row['detalle']);
             $entity = $em->getRepository('YacareOrganizacionBundle:Departamento')->findOneBy(array(
                 'ImportSrc' => 'rr_hh.direcciones',
                 'ImportId' => $Row['secretaria'] . '.' . $Row['direccion']
             ));
             
-            if (!$entity) {
-                $nuevoId = $this->getDoctrine()->getManager()->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')->getSingleScalarResult();
+            if (! $entity) {
+                $nuevoId = $this->getDoctrine()
+                    ->getManager()
+                    ->createQuery('SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r')
+                    ->getSingleScalarResult();
                 $entity = new \Yacare\OrganizacionBundle\Entity\Departamento();
-                $entity->setId(++$nuevoId);
+                $entity->setId(++ $nuevoId);
                 $entity->setNombre($nombreBueno);
                 $entity->setRango(50);
                 $entity->setImportSrc('rr_hh.direcciones');
                 $entity->setImportId($Row['secretaria'] . '.' . $Row['direccion']);
-
-                $importar_importados++;
+                
+                $importar_importados ++;
             } else {
-                $importar_actualizados++;
+                $importar_actualizados ++;
             }
-
+            
             $Secre = $em->getRepository('YacareOrganizacionBundle:Departamento')->findOneBy(array(
                 'ImportSrc' => 'rr_hh.secretarias',
                 'ImportId' => $Row['secretaria']
@@ -685,11 +677,11 @@ WHERE rnum >" . $desde . "
             if ($Row['fecha_baja']) {
                 $entity->setSuprimido(true);
             }
-
+            
             $em->persist($entity);
             $em->flush();
             
-            $importar_procesados++;
+            $importar_procesados ++;
             $log[] = 'Dirección ' . $Row['secretaria'] . '.' . $Row['direccion'] . ' ' . $nombreBueno;
         }
         
@@ -698,23 +690,8 @@ WHERE rnum >" . $desde . "
             'importar_actualizados' => $importar_actualizados,
             'importar_procesados' => $importar_procesados,
             'log' => $log
-            );
+        );
     }
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * @Route("agentes/")
@@ -722,7 +699,7 @@ WHERE rnum >" . $desde . "
      */
     public function importarAgentesAction(Request $request)
     {
-        $desde = (int)($request->query->get('desde'));
+        $desde = (int) ($request->query->get('desde'));
         $cant = 100;
         
         mb_internal_encoding('UTF-8');
@@ -731,38 +708,38 @@ WHERE rnum >" . $desde . "
         ini_set('memory_limit', '2048M');
         
         $em = $this->getDoctrine()->getManager();
-
+        
         $DbRecursos = $this->ConectarRrhh();
         
         $importar_importados = 0;
         $importar_actualizados = 0;
         $importar_procesados = 0;
         $log = array();
-
+        
         $GrupoAgentes = $em->getRepository('YacareBaseBundle:PersonaGrupo')->find(1);
         
-        foreach($DbRecursos->query("SELECT * FROM agentes WHERE nrodoc>0 LIMIT $desde, $cant") as $Row) {
+        foreach ($DbRecursos->query("SELECT * FROM agentes WHERE nrodoc>0 LIMIT $desde, $cant") as $Row) {
             $entity = $em->getRepository('YacareRecursosHumanosBundle:Agente')->findOneBy(array(
                 'ImportSrc' => 'rr_hh.agentes',
                 'ImportId' => $Row['legajo']
             ));
             
-            if (!$entity) {
+            if (! $entity) {
                 $entity = new \Yacare\RecursosHumanosBundle\Entity\Agente();
                 
                 // Asigno manualmente el ID
-                $entity->setId((int)($Row['legajo']));
+                $entity->setId((int) ($Row['legajo']));
                 $metadata = $em->getClassMetaData(get_class($entity));
                 $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
                 
                 $Persona = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array(
-                    'DocumentoNumero' => trim($Row['nrodoc']),
+                    'DocumentoNumero' => trim($Row['nrodoc'])
                 ));
                 
-                if (!$Persona) {
+                if (! $Persona) {
                     $Persona = new \Yacare\BaseBundle\Entity\Persona();
                     $Persona->setDocumentoNumero($Row['nrodoc']);
-                    $Persona->setDocumentoTipo((int)$Row['tipodoc']);
+                    $Persona->setDocumentoTipo((int) $Row['tipodoc']);
                 }
                 $Persona->setNombre(StringHelper::Desoraclizar($Row['name']));
                 $Persona->setApellido(StringHelper::Desoraclizar($Row['lastname']));
@@ -773,10 +750,10 @@ WHERE rnum >" . $desde . "
                 $Persona->setGenero($Row['sexo'] == 1 ? 1 : 0);
                 $Persona->setEmail(str_ireplace('NO DECLARA', '', strtolower($Row['email'])));
                 $Persona->setCuilt(trim($Row['cuil']));
-
+                
                 $em->persist($Persona);
                 $em->flush();
-           
+                
                 $Departamento = $em->getRepository('YacareOrganizacionBundle:Departamento')->findOneBy(array(
                     'ImportSrc' => 'rr_hh.direcciones',
                     'ImportId' => $Row['secretaria'] . '.' . $Row['direccion']
@@ -790,25 +767,25 @@ WHERE rnum >" . $desde . "
                 
                 $entity->setImportSrc('rr_hh.agentes');
                 $entity->setImportId($Row['legajo']);
-
-                $importar_importados++;
+                
+                $importar_importados ++;
             } else {
                 $Persona = $entity->getPersona();
-                $importar_actualizados++;
+                $importar_actualizados ++;
             }
-
+            
             // Si no está en el grupo agentes, lo agrego
             if ($Persona->getGrupos()->contains($GrupoAgentes) == false) {
                 $Persona->getGrupos()->add($GrupoAgentes);
                 $em->persist($Persona);
             }
-
+            
             if ($Row['fechaingre']) {
                 $entity->setFechaIngreso(new \DateTime($Row['fechaingre']));
             } else {
                 $entity->setFechaIngreso(null);
-            }                
-
+            }
+            
             if ($Row['fechabaja']) {
                 $entity->setFechaBaja(new \DateTime($Row['fechabaja']));
                 $entity->setSuprimido(true);
@@ -820,8 +797,8 @@ WHERE rnum >" . $desde . "
             $em->persist($entity);
             $em->flush();
             
-            $importar_procesados++;
-            $log[] = $Row['legajo'] . ': ' . (string)$entity . ' -- ' . (string)$entity->getDepartamento();
+            $importar_procesados ++;
+            $log[] = $Row['legajo'] . ': ' . (string) $entity . ' -- ' . (string) $entity->getDepartamento();
         }
         
         return array(
@@ -830,12 +807,12 @@ WHERE rnum >" . $desde . "
             'importar_procesados' => $importar_procesados,
             'redir_desde' => ($importar_procesados == $cant ? $desde + $cant : 0),
             'log' => $log
-            );
+        );
     }
-    
-    
-    protected function ConectarOracle() {
-                $tns = '(DESCRIPTION = 
+
+    protected function ConectarOracle()
+    {
+        $tns = '(DESCRIPTION = 
 			    (ADDRESS_LIST = 
 			        (ADDRESS = 
 			          (COMMUNITY = tcp.world)
@@ -847,12 +824,12 @@ WHERE rnum >" . $desde . "
 			    (CONNECT_DATA = (SID = dbmunirg)
 			    )
 			  )';
-  
+        
         return new \PDO('oci:charset=UTF8;dbname=' . $tns, 'rgr', '123');
     }
-    
-    
-    protected function ConectarRrhh() {
+
+    protected function ConectarRrhh()
+    {
         return new \PDO('mysql:host=192.168.100.5;dbname=rr_hh;charset=utf8', 'yacare', 'L1n4j3');
     }
 }
