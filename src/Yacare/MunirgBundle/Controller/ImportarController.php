@@ -786,19 +786,19 @@ WHERE rnum >" . $desde . "
                 $entity->setFechaIngreso(null);
             }
             
-            if ($Row['fechabaja']) {
+            if (is_null($Row['fechabaja']) || $Row['fechabaja'] === '0000-00-00') {
+            	$entity->setFechaBaja(null);
+                $entity->setSuprimido(false);
+            } else {
                 $entity->setFechaBaja(new \DateTime($Row['fechabaja']));
                 $entity->setSuprimido(true);
-            } else {
-                $entity->setFechaBaja(null);
-                $entity->setSuprimido(false);
             }
             
             $em->persist($entity);
             $em->flush();
             
             $importar_procesados ++;
-            $log[] = $Row['legajo'] . ': ' . (string) $entity . ' -- ' . (string) $entity->getDepartamento();
+            $log[] = $Row['legajo'] . ': ' . (string) $entity . ($entity->getSuprimido() ? '*' : '') . ' -- ' . (string) $entity->getDepartamento();
         }
         
         return array(
