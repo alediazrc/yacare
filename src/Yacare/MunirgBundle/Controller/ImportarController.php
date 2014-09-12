@@ -456,7 +456,9 @@ WHERE rnum >" . $desde . "
 					$entity->getGrupos ()->add ( $GrupoContribuyentes );
 				}
 				if ($Row ['Q_SEXO'] == 'F') {
-					$entity->setGenero ( 1 );
+					$entity->setGenero ( 2 );
+				} else if ($Row ['Q_SEXO'] == 'M') {
+				    $entity->setGenero ( 1 );
 				}
 				if ($Cuilt) {
 					$entity->setCuilt ( $Cuilt );
