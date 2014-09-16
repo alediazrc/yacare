@@ -535,7 +535,7 @@ WHERE rnum >" . $desde . "
 			
 			if (! $entity) {
 				$entity = $em->getRepository ( 'YacareCatastroBundle:Calle' )->findOneBy ( array (
-						'Nombre' => $nombreBueno 
+						'nombre' => $nombreBueno 
 				) );
 			}
 			
