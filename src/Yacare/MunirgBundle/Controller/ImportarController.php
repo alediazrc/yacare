@@ -780,9 +780,23 @@ WHERE rnum >" . $desde . "
 				$em->flush ();
 				
 				$Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
-						'ImportSrc' => 'rr_hh.direcciones',
-						'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion'] 
+						'ImportSrc' => 'rr_hh.sectores',
+						'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion'] . '.' . $Row ['sector']  
 				) );
+				
+				if(!$Departamento) {
+				    $Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
+				        'ImportSrc' => 'rr_hh.direcciones',
+				        'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion']
+				    ) );
+				}
+				
+				if(!$Departamento) {
+				    $Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
+				        'ImportSrc' => 'rr_hh.secretarias',
+				        'ImportId' => $Row ['secretaria']
+				    ) );
+				}
 				
 				$entity->setPersona ( $Persona );
 				$entity->setDepartamento ( $Departamento );
