@@ -778,32 +778,9 @@ WHERE rnum >" . $desde . "
 				
 				$em->persist ( $Persona );
 				$em->flush ();
-				
-				$Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
-						'ImportSrc' => 'rr_hh.sectores',
-						'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion'] . '.' . $Row ['sector']  
-				) );
-				
-				if(!$Departamento) {
-				    $Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
-				        'ImportSrc' => 'rr_hh.direcciones',
-				        'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion']
-				    ) );
-				}
-				
-				if(!$Departamento) {
-				    $Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
-				        'ImportSrc' => 'rr_hh.secretarias',
-				        'ImportId' => $Row ['secretaria']
-				    ) );
-				}
-				
+			
 				$entity->setPersona ( $Persona );
-				$entity->setDepartamento ( $Departamento );
-				$entity->setCategoria ( $Row ['categoria'] );
-				$entity->setSituacion ( $Row ['situacion'] );
-				$entity->setFuncion ( StringHelper::Desoraclizar ( $Row ['funcion'] ) );
-				
+
 				$entity->setImportSrc ( 'rr_hh.agentes' );
 				$entity->setImportId ( $Row ['legajo'] );
 				
@@ -812,7 +789,31 @@ WHERE rnum >" . $desde . "
 				$Persona = $entity->getPersona ();
 				$importar_actualizados ++;
 			}
+
+			$Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
+			    'ImportSrc' => 'rr_hh.sectores',
+			    'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion'] . '.' . $Row ['sector']
+			) );
 			
+			if(!$Departamento) {
+			    $Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
+			        'ImportSrc' => 'rr_hh.direcciones',
+			        'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion']
+			    ) );
+			}
+			
+			if(!$Departamento) {
+			    $Departamento = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
+			        'ImportSrc' => 'rr_hh.secretarias',
+			        'ImportId' => $Row ['secretaria']
+			    ) );
+			}
+			
+			$entity->setDepartamento ( $Departamento );
+			$entity->setCategoria ( $Row ['categoria'] );
+			$entity->setSituacion ( $Row ['situacion'] );
+			$entity->setFuncion ( StringHelper::Desoraclizar ( $Row ['funcion'] ) );
+				
 			// Si no está en el grupo agentes, lo agrego
 			if ($Persona->getGrupos ()->contains ( $GrupoAgentes ) == false) {
 				$Persona->getGrupos ()->add ( $GrupoAgentes );
