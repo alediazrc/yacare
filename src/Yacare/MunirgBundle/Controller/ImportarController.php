@@ -599,7 +599,6 @@ WHERE rnum >" . $desde . "
 				$nuevoId = $this->getDoctrine ()->getManager ()->createQuery ( 'SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r' )->getSingleScalarResult ();
 				$entity = new \Yacare\OrganizacionBundle\Entity\Departamento ();
 				$entity->setId ( ++ $nuevoId );
-				$entity->setNombre ( $nombreBueno );
 				$entity->setRango ( 30 );
 				$entity->setImportSrc ( 'rr_hh.secretarias' );
 				$entity->setImportId ( $Row ['codigo'] );
@@ -608,6 +607,8 @@ WHERE rnum >" . $desde . "
 			} else {
 				$importar_actualizados ++;
 			}
+			
+			$entity->setNombre ( $nombreBueno );
 			
 			$entity->setParentNode ( $Ejecutivo );
 			if ($Row ['fecha_baja']) {
@@ -618,8 +619,9 @@ WHERE rnum >" . $desde . "
 			$em->flush ();
 			
 			$importar_procesados ++;
-			$log [] = 'Secretaría ' . $Row ['codigo'] . ' ' . $nombreBueno;
+			$log [] = 'Secretaría ' . $Row ['codigo'] . " \t" . $nombreBueno;
 		}
+		
 		
 		foreach ( $DbRecursos->query ( 'SELECT * FROM direcciones WHERE secretaria<>999' ) as $Row ) {
 			$nombreBueno = StringHelper::Desoraclizar ( $Row ['detalle'] );
@@ -632,7 +634,6 @@ WHERE rnum >" . $desde . "
 				$nuevoId = $this->getDoctrine ()->getManager ()->createQuery ( 'SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r' )->getSingleScalarResult ();
 				$entity = new \Yacare\OrganizacionBundle\Entity\Departamento ();
 				$entity->setId ( ++ $nuevoId );
-				$entity->setNombre ( $nombreBueno );
 				$entity->setRango ( 50 );
 				$entity->setImportSrc ( 'rr_hh.direcciones' );
 				$entity->setImportId ( $Row ['secretaria'] . '.' . $Row ['direccion'] );
@@ -642,22 +643,73 @@ WHERE rnum >" . $desde . "
 				$importar_actualizados ++;
 			}
 			
+			$entity->setNombre ( $nombreBueno );
+			if ($Row ['fecha_baja']) {
+			    $entity->setSuprimido ( true );
+			}
+				
 			$Secre = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
 					'ImportSrc' => 'rr_hh.secretarias',
 					'ImportId' => $Row ['secretaria'] 
 			) );
 			$entity->setParentNode ( $Secre );
 			
-			if ($Row ['fecha_baja']) {
-				$entity->setSuprimido ( true );
-			}
-			
 			$em->persist ( $entity );
 			$em->flush ();
 			
 			$importar_procesados ++;
-			$log [] = 'Dirección ' . $Row ['secretaria'] . '.' . $Row ['direccion'] . ' ' . $nombreBueno;
+			$log [] = 'Dirección ' . $Row ['secretaria'] . '.' . $Row ['direccion'] . " \t" . $nombreBueno;
 		}
+		
+		
+		
+		foreach ( $DbRecursos->query ( 'SELECT * FROM sectores' ) as $Row ) {
+		    $nombreBueno = StringHelper::Desoraclizar ( $Row ['detalle'] );
+		    $entity = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
+		        'ImportSrc' => 'rr_hh.sectores',
+		        'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion'] . '.' . $Row ['sector']
+		    ) );
+		    	
+		    if (! $entity) {
+		        $nuevoId = $this->getDoctrine ()->getManager ()->createQuery ( 'SELECT MAX(r.id) FROM YacareOrganizacionBundle:Departamento r' )->getSingleScalarResult ();
+		        $entity = new \Yacare\OrganizacionBundle\Entity\Departamento ();
+		        $entity->setId ( ++ $nuevoId );
+		        $entity->setRango ( 70 );
+		        $entity->setImportSrc ( 'rr_hh.sectores' );
+		        $entity->setImportId ( $Row ['secretaria'] . '.' . $Row ['direccion'] . '.' . $Row ['sector'] );
+		
+		        $importar_importados ++;
+		    } else {
+		        $importar_actualizados ++;
+		    }
+		    	
+		    $entity->setNombre ( $nombreBueno );
+		    
+		    if ($Row ['fecha_baja']) {
+		        $entity->setSuprimido ( true );
+		    } else {
+		        $entity->setSuprimido ( false );
+		    }
+		    
+		    if ($Row ['parte']) {
+		        $entity->setHaceParteDiario ( true );
+		    } else {
+		        $entity->setHaceParteDiario ( false );
+		    }
+
+		    $Dire = $em->getRepository ( 'YacareOrganizacionBundle:Departamento' )->findOneBy ( array (
+		        'ImportSrc' => 'rr_hh.direcciones',
+		        'ImportId' => $Row ['secretaria'] . '.' . $Row ['direccion']
+		    ) );
+		    $entity->setParentNode ( $Dire );
+		    
+		    $em->persist ( $entity );
+		    $em->flush ();
+		    	
+		    $importar_procesados ++;
+		    $log [] = 'Sector ' . $Row ['secretaria'] . '.' . $Row ['direccion'] . '.' . $Row ['sector'] . " \t" . $nombreBueno;
+		}
+		
 		
 		return array (
 				'importar_importados' => $importar_importados,
