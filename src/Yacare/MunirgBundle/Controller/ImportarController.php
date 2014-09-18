@@ -813,6 +813,14 @@ WHERE rnum >" . $desde . "
 			$entity->setCategoria ( $Row ['categoria'] );
 			$entity->setSituacion ( $Row ['situacion'] );
 			$entity->setFuncion ( StringHelper::Desoraclizar ( $Row ['funcion'] ) );
+			$entity->setMotivoBaja ( $Row ['motivo'] );
+			
+			$entity->setEstudiosNivel ( $Row ['estudios'] );
+			if($Row ['titulo'] == 999) {
+				$entity->setEstudiosTitulo ( null );
+			} else {
+			    $entity->setEstudiosTitulo ( $Row ['titulo'] );
+			}
 				
 			// Si no está en el grupo agentes, lo agrego
 			if ($Persona->getGrupos ()->contains ( $GrupoAgentes ) == false) {
