@@ -828,6 +828,11 @@ WHERE rnum >" . $desde . "
 				$em->persist ( $Persona );
 			}
 			
+			// Le pongo el número de legajo en la persona
+			if($entity->getId()) {
+			    $Persona->setAgenteId ( $entity->getId() );
+			}
+			
 			if ($Row ['fechaingre']) {
 				$entity->setFechaIngreso ( new \DateTime ( $Row ['fechaingre'] ) );
 			} else {
