@@ -175,7 +175,7 @@ WHERE rnum >" . $desde . "
 					$entity->setZona ( null );
 				}
 				
-				if ($Row ['TIT_TG06100_ID']) {
+				if ($Row ['TIT_TG06100_ID'] || $Row['DOCUMENTO_NRO'] || $Row['IDENTIFICACION_TRIBUTARIA']) {
 					$titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('Tg06100Id' => $Row['TIT_TG06100_ID']));
 					if(!$titular && $Row['DOCUMENTO_NRO']) {
 					   $titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('DocumentoNumero' => $Row['DOCUMENTO_NRO']));
@@ -183,14 +183,14 @@ WHERE rnum >" . $desde . "
 					if(!$titular && $Row['IDENTIFICACION_TRIBUTARIA']) {
 					    $titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('Cuilt' => $Row['IDENTIFICACION_TRIBUTARIA']));
 					}
-					$entity->setTitular ( $titular );
+					$entity->setTitular($titular);
 					if ($titular)
-						$log [] = "titular encontrado " . $Row ['TIT_TG06100_ID'] . ': ' . $titular;
+						$log[] = "titular encontrado " . $Row['TIT_TG06100_ID'] . ': ' . $titular;
 					else
-						$log [] = "titular NO encontrado " . $Row ['TIT_TG06100_ID'];
+						$log[] = "titular NO encontrado " . $Row['TIT_TG06100_ID'];
 				} else {
-					$log [] = "*** Sin titular " . $Row ['TIT_TG06100_ID'];
-					$entity->setTitular ( null );
+					$log[] = "*** Sin titular " . $Row['TIT_TG06100_ID'];
+					$entity->setTitular(null);
 				}
 				
 				$entity->setUnidadFuncional ( $UnidadFuncional );
