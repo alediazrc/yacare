@@ -176,9 +176,13 @@ WHERE rnum >" . $desde . "
 				}
 				
 				if ($Row ['TIT_TG06100_ID']) {
-					$titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy ( array (
-							'Tg06100Id' => $Row ['TIT_TG06100_ID'] 
-					) );
+					$titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('Tg06100Id' => $Row['TIT_TG06100_ID']));
+					if(!$titular && $Row['DOCUMENTO_NRO']) {
+					   $titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('DocumentoNumero' => $Row['DOCUMENTO_NRO']));
+					}
+					if(!$titular && $Row['IDENTIFICACION_TRIBUTARIA']) {
+					    $titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('Cuilt' => $Row['IDENTIFICACION_TRIBUTARIA']));
+					}
 					$entity->setTitular ( $titular );
 					if ($titular)
 						$log [] = "titular encontrado " . $Row ['TIT_TG06100_ID'] . ': ' . $titular;
