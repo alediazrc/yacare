@@ -175,13 +175,16 @@ WHERE rnum >" . $desde . "
 					$entity->setZona ( null );
 				}
 				
+				$Row['DOCUMENTO_NRO'] = str_replace(array(' ', '-', '.'), '', $Row['DOCUMENTO_NRO']);
+				$Row['IDENTIFICACION_TRIBUTARIA'] = str_replace(array(' ', '-', '.'), '', $Row['IDENTIFICACION_TRIBUTARIA']);
+				
 				if ($Row ['TIT_TG06100_ID'] || $Row['DOCUMENTO_NRO'] || $Row['IDENTIFICACION_TRIBUTARIA']) {
-					$titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('Tg06100Id' => $Row['TIT_TG06100_ID']));
+					$titular = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array('Tg06100Id' => $Row['TIT_TG06100_ID']));
 					if(!$titular && $Row['DOCUMENTO_NRO']) {
-					   $titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('DocumentoNumero' => $Row['DOCUMENTO_NRO']));
+					   $titular = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array('DocumentoNumero' => $Row['DOCUMENTO_NRO']));
 					}
 					if(!$titular && $Row['IDENTIFICACION_TRIBUTARIA']) {
-					    $titular = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy(array('Cuilt' => $Row['IDENTIFICACION_TRIBUTARIA']));
+					    $titular = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array('Cuilt' => $Row['IDENTIFICACION_TRIBUTARIA']));
 					}
 					$entity->setTitular($titular);
 					if ($titular)
