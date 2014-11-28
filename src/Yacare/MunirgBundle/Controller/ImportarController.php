@@ -398,13 +398,17 @@ WHERE rnum >" . $desde . "
 			$Row ['TG06100_ID'] = ( int ) ($Row ['TG06100_ID']);
 			$CodigoCalle = $this->ArreglarCodigoCalle($Row ['CODIGO_CALLE']);
 			
+			if(!$Cuilt) {
+			    $Cuilt = str_replace(array(' ', '-', '.'), '', $Row['IDENTIFICACION_TRIBUTARIA']);
+			}
+			
 			$entity = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy ( array (
 					'Tg06100Id' => $Row ['TG06100_ID'] 
 			) );
 			
-			/*
-			 * if ($entity == null && $Cuilt) { $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array( 'Cuilt' => $Cuilt )); }
-			 */
+			if ($entity == null && $Cuilt) {
+			    $entity = $em->getRepository('YacareBaseBundle:Persona')->findOneBy(array( 'Cuilt' => $Cuilt ));
+			}
 			
 			if ($entity == null) {
 				$entity = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy ( array(
@@ -435,9 +439,6 @@ WHERE rnum >" . $desde . "
 				} else if ($Row ['Q_SEXO'] == 'M') {
 				    $entity->setGenero ( 1 );
 				}
-				if ($Cuilt) {
-					$entity->setCuilt ( $Cuilt );
-				}
 				
 				$em->persist ( $entity );
 				$importar_importados ++;
@@ -452,6 +453,9 @@ WHERE rnum >" . $desde . "
 			$entity->setRazonSocial ( $RazonSocial );
 			$entity->setPersonaJuridica ( $PersJur );
 			$entity->setDocumentoNumero ( $Documento [1] );
+			if (!$entity->getCuilt() && $Cuilt) {
+			    $entity->setCuilt($Cuilt);
+			}
 			
 			// Campos que se actualizan siempre
 			$entity->setDocumentoTipo ( $TipoDocs [$Documento [0]] );
