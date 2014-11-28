@@ -399,7 +399,7 @@ WHERE rnum >" . $desde . "
 			$CodigoCalle = $this->ArreglarCodigoCalle($Row ['CODIGO_CALLE']);
 			
 			if(!$Cuilt) {
-			    $Cuilt = str_replace(array(' ', '-', '.'), '', $Row['IDENTIFICACION_TRIBUTARIA']);
+			    $Cuilt = str_replace(array(' ', '-', '.'), '', $Row['J_IDENTIFICACION_TRIBUTARIA']);
 			}
 			
 			$entity = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy ( array (
