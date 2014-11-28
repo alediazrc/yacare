@@ -159,9 +159,13 @@ WHERE rnum >" . $desde . "
 				$importar_actualizados ++;
 			}
 			
+			$CodigoCalle = $this->ArreglarCodigoCalle($Row ['CODIGO_CALLE']);
+			
 			if ($entity && $Seccion) {
-				if ($Row ['CODIGO_CALLE']) {
-					$entity->setDomicilioCalle ( $em->getReference ( 'YacareCatastroBundle:Calle', $Row ['CODIGO_CALLE'] ) );
+				if ($CodigoCalle) {
+					$entity->setDomicilioCalle ( $em->getReference ( 'YacareCatastroBundle:Calle', $CodigoCalle ) );
+				} else {
+				    $entity->setDomicilioCalle(null);
 				}
 				
 				if ($Row ['ZONA_CURB']) {
@@ -202,7 +206,7 @@ WHERE rnum >" . $desde . "
 					$entity->setTitular(null);
 				}
 				
-				$entity->setUnidadFuncional ( $UnidadFuncional );
+				$entity->setUnidadFuncional ( $UnidadFuncional, $CodigoCalle );
 				$entity->setDomicilioNumero ( ( int ) ($Row ['NUMERO']) );
 				$entity->setDomicilioPiso ( trim ( $Row ['PISO'] ) );
 				$entity->setDomicilioPuerta ( trim ( $Row ['DEPARTAMENTO'] ) );
@@ -392,51 +396,7 @@ WHERE rnum >" . $desde . "
 			}
 			
 			$Row ['TG06100_ID'] = ( int ) ($Row ['TG06100_ID']);
-			
-			// Arreglar errores conocidos
-			// O algunas calles que están duplicadas en SIGEMI (Isla Soledad con ids 85 y 354)
-			// y que en Yacaré ingresan una sola vez.
-			if ($Row ['CODIGO_CALLE'] == 380) {
-				$Row ['CODIGO_CALLE'] = null; // No existe
-			} else if ($Row ['CODIGO_CALLE'] == 384) { // Santa María Dominga Mazzarello
-				$Row ['CODIGO_CALLE'] = 389; // Este es el código correcto
-			} else if ($Row ['CODIGO_CALLE'] == 454) { // Juana Manuela Gorriti
-				$Row ['CODIGO_CALLE'] = 249;
-			} else if ($Row ['CODIGO_CALLE'] == 1482) { // General Villegas
-				$Row ['CODIGO_CALLE'] = 211;
-			} else if ($Row ['CODIGO_CALLE'] == 724) { // Remolcador Guaraní
-				$Row ['CODIGO_CALLE'] = 69;
-			} else if ($Row ['CODIGO_CALLE'] == 567) { // Neuquén
-				$Row ['CODIGO_CALLE'] = 144;
-			} else if (( int ) ($Row ['CODIGO_CALLE']) == 0 || $Row ['CODIGO_CALLE'] == 1748) { // ???
-				$Row ['CODIGO_CALLE'] = null;
-			} else if ($Row ['CODIGO_CALLE'] == 1157) { // 25 de Mayo
-				$Row ['CODIGO_CALLE'] = 224;
-			} else if ($Row ['CODIGO_CALLE'] == 474) { // Rosales
-				$Row ['CODIGO_CALLE'] = 174;
-			} else if ($Row ['CODIGO_CALLE'] == 3247) { // Luis Garibaldi Honte
-				$Row ['CODIGO_CALLE'] = 285;
-			} else if ($Row ['CODIGO_CALLE'] == 1768) { // Obispo Trejo
-				$Row ['CODIGO_CALLE'] = 294;
-			} else if ($Row ['CODIGO_CALLE'] == 1153) { // José Hernández
-				$Row ['CODIGO_CALLE'] = 90;
-			} else if ($Row ['CODIGO_CALLE'] == 1398 || $Row ['CODIGO_CALLE'] == 1381) { // Belisario Roldán
-				$Row ['CODIGO_CALLE'] = 173;
-			} else if ($Row ['CODIGO_CALLE'] == 1506) { // Tomas Roldán
-				$Row ['CODIGO_CALLE'] = 53;
-			} else if ($Row ['CODIGO_CALLE'] == 718) { // Libertad
-				$Row ['CODIGO_CALLE'] = 116;
-			} else if ($Row ['CODIGO_CALLE'] == 1949) { // Juan Bautista Thorne
-				$Row ['CODIGO_CALLE'] = 197;
-			} else if ($Row ['CODIGO_CALLE'] == 857) { // Gobernador Paz
-				$Row ['CODIGO_CALLE'] = 67;
-			} else if ($Row ['CODIGO_CALLE'] == 655) { // Estrada
-				$Row ['CODIGO_CALLE'] = 55;
-			} else if ($Row ['CODIGO_CALLE'] == 354) { // Estrada
-				$Row ['CODIGO_CALLE'] = 85;
-			} else if ($Row ['CODIGO_CALLE'] == 2451) { // Mariano Moreno
-				$Row ['CODIGO_CALLE'] = 251;
-			}
+			$CodigoCalle = $this->ArreglarCodigoCalle($Row ['CODIGO_CALLE']);
 			
 			$entity = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy ( array (
 					'Tg06100Id' => $Row ['TG06100_ID'] 
@@ -458,8 +418,8 @@ WHERE rnum >" . $desde . "
 				$entity->setTg06100Id ( $Row ['TG06100_ID'] );
 				
 				$entity->setDomicilioCodigoPostal ( '9420' );
-				if ($Row ['CODIGO_CALLE']) {
-					$entity->setDomicilioCalle ( $em->getReference ( 'YacareCatastroBundle:Calle', $Row ['CODIGO_CALLE'] ) );
+				if ($CodigoCalle) {
+					$entity->setDomicilioCalle ( $em->getReference ( 'YacareCatastroBundle:Calle', $CodigoCalle ) );
 				}
 				$entity->setDomicilioCalleNombre ( StringHelper::Desoraclizar ( $Row ['CALLE'] ) );
 				$entity->setDomicilioNumero ( $Row ['NUMERO'] );
@@ -877,6 +837,7 @@ WHERE rnum >" . $desde . "
 				'log' => $log 
 		);
 	}
+	
 	protected function ConectarOracle() {
 		$tns = '(DESCRIPTION = 
 			    (ADDRESS_LIST = 
@@ -893,7 +854,57 @@ WHERE rnum >" . $desde . "
 		
 		return new \PDO ( 'oci:charset=UTF8;dbname=' . $tns, 'rgr', '123' );
 	}
+	
 	protected function ConectarRrhh() {
 		return new \PDO ( 'mysql:host=192.168.100.5;dbname=rr_hh;charset=utf8', 'yacare', 'L1n4j3' );
+	}
+	
+	protected function ArreglarCodigoCalle($codigoCalle) {
+	    // Arreglar errores conocidos
+	    // O algunas calles que están duplicadas en SIGEMI (Isla Soledad con ids 85 y 354)
+	    // y que en Yacaré ingresan una sola vez.
+	    if ($codigoCalle == 380) {
+	        return null; // No existe
+	    } else if ($codigoCalle == 384) { // Santa María Dominga Mazzarello
+	        return 389; // Este es el código correcto
+	    } else if ($codigoCalle == 454) { // Juana Manuela Gorriti
+	        return 249;
+	    } else if ($codigoCalle == 1482) { // General Villegas
+	        return 211;
+	    } else if ($codigoCalle == 724) { // Remolcador Guaraní
+	        return 69;
+	    } else if ($codigoCalle == 567) { // Neuquén
+	        return 144;
+	    } else if (( int ) ($codigoCalle) == 0 || $codigoCalle == 1748) { // ???
+	        return null;
+	    } else if ($codigoCalle == 1157) { // 25 de Mayo
+	        return 224;
+	    } else if ($codigoCalle == 474) { // Rosales
+	        return 174;
+	    } else if ($codigoCalle == 3247) { // Luis Garibaldi Honte
+	        return 285;
+	    } else if ($codigoCalle == 1768) { // Obispo Trejo
+	        return 294;
+	    } else if ($codigoCalle == 1153) { // José Hernández
+	        return 90;
+	    } else if ($codigoCalle == 1398 || $codigoCalle == 1381) { // Belisario Roldán
+	        return 173;
+	    } else if ($codigoCalle == 1506) { // Tomas Roldán
+	        return 53;
+	    } else if ($codigoCalle == 718) { // Libertad
+	        return 116;
+	    } else if ($codigoCalle == 1949) { // Juan Bautista Thorne
+	        return 197;
+	    } else if ($codigoCalle == 857) { // Gobernador Paz
+	        return 67;
+	    } else if ($codigoCalle == 655) { // Estrada
+	        return 55;
+	    } else if ($codigoCalle == 354) { // Estrada
+	        return 85;
+	    } else if ($codigoCalle == 2451) { // Mariano Moreno
+	        return 251;
+	    } else {
+	        return (int)($codigoCalle);
+	    }	    
 	}
 }
