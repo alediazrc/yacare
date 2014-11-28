@@ -200,7 +200,7 @@ WHERE rnum >" . $desde . "
 					if ($titular)
 						$log[] = "titular encontrado " . $Row['TIT_TG06100_ID'] . ': ' . $titular;
 					else
-						$log[] = "titular NO encontrado " . $Row['TIT_TG06100_ID'];
+						$log[] = "titular NO encontrado " . $Row['TIT_TG06100_ID'] . ', doc ' . $Row['DOCUMENTO_NRO'] . ', it ' . $Row['IDENTIFICACION_TRIBUTARIA'];
 				} else {
 					$log[] = "*** Sin titular " . $Row['TIT_TG06100_ID'];
 					$entity->setTitular(null);
