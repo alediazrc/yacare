@@ -863,6 +863,40 @@ WHERE rnum >" . $desde . "
 		return new \PDO ( 'mysql:host=192.168.100.5;dbname=rr_hh;charset=utf8', 'yacare', 'L1n4j3' );
 	}
 	
+	protected function ArreglarNombreCalle($nombreCalle) {
+	    switch($nombreCalle) {
+	        case 'D\'Agostini': 
+	            return 'Reverendo Padre Alberto D\'Agostini'; break;
+	        case 'Juaretche':
+	            return 'Arturo Jauretche'; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            case '':
+                return ''; break;
+            default:
+                return $nombreCalle;
+                break;
+	    }
+	}
+	
 	protected function ArreglarCodigoCalle($codigoCalle) {
 	    // Arreglar errores conocidos
 	    // O algunas calles que están duplicadas en SIGEMI (Isla Soledad con ids 85 y 354)
@@ -910,5 +944,160 @@ WHERE rnum >" . $desde . "
 	    } else {
 	        return (int)($codigoCalle);
 	    }	    
+	}
+	
+	
+	
+	/**
+	 * @Route("matriculados/")
+	 * @Template("YacareMunirgBundle:Importar:importar.html.twig")
+	 */
+	public function importarMatriculadosAction(Request $request) {
+	    $desde = ( int ) ($request->query->get ( 'desde' ));
+	    $cant = 100;
+	
+	    mb_internal_encoding ( 'UTF-8' );
+	    ini_set ( 'display_errors', 1 );
+	    set_time_limit ( 600 );
+	    ini_set ( 'memory_limit', '2048M' );
+	
+	    $em = $this->getDoctrine ()->getManager ();
+	
+	    $ArchivoMatriculados = fopen('matriculados.csv', 'r');
+	
+	    $importar_importados = 0;
+	    $importar_actualizados = 0;
+	    $importar_procesados = 0;
+	    $log = array ();
+	
+	    $GrupoMatriculados = $em->getRepository ( 'YacareBaseBundle:PersonaGrupo' )->find ( 4 );
+	
+	    while(! feof($ArchivoMatriculados)) {
+	        $Row = fgetcsv($ArchivoMatriculados);
+	        
+	        if($Row && count($Row) > 1 && $Row [0]) {
+    	        $entity = $em->getRepository ( 'YacareObrasParticularesBundle:Matriculado' )->find ( $Row[0] );
+    	        	
+    	        if (! $entity) {
+    	            $entity = new \Yacare\ObrasParticularesBundle\Entity\Matriculado ();
+    	
+    	            // Asigno manualmente el ID
+    	            $entity->setId ( ( int ) ($Row [0]) );
+    	            $metadata = $em->getClassMetaData ( get_class ( $entity ) );
+    	            $metadata->setIdGeneratorType ( \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE );
+    	
+    	            $Persona = $em->getRepository ( 'YacareBaseBundle:Persona' )->findOneBy ( array (
+    	                'DocumentoNumero' => trim ( $Row [1] )
+    	            ) );
+    	
+    	            if (! $Persona) {
+    	                $Persona = new \Yacare\BaseBundle\Entity\Persona ();
+    	                $Persona->setDocumentoNumero ( $Row [1] );
+    	                $Persona->setDocumentoTipo ( 1 );
+    	                
+    	                $log [] = 'Creando persona: DNI ' . $Row [1] . ', ' . $Row [2];
+    	            }
+
+    	            $entity->setPersona ( $Persona );
+    	
+    	            $importar_importados ++;
+    	        } else {
+    	            $Persona = $entity->getPersona ();
+    	            $importar_actualizados ++;
+    	        }
+    	        
+    	        
+    	        $ApellidoYNombres = StringHelper::ObtenerApellidoYNombres ( $Row [2] );
+    	         
+    	        $PartesDomicilio = StringHelper::ObtenerCalleYNumero ( $Row [3] );
+    	         
+    	        /* $Calle = $em->getRepository ( 'YacareCatastroBundle:Calle' )->findOneBy ( array (
+    	         'Nombre' => $this->ArreglarNombreCalle ( $PartesDomicilio [0] )
+    	        ) ); */
+    	         
+    	        $Calles = $em->getRepository('YacareCatastroBundle:Calle')->createQueryBuilder('c')
+    	        ->where('c.Nombre LIKE :nombre')
+    	        ->setParameter('nombre', $this->ArreglarNombreCalle ( $PartesDomicilio [0] ))
+    	        ->getQuery()
+    	        ->getResult();
+    	         
+    	        if($Calles) {
+    	            $Calle = $Calles[0];
+    	        }
+    	         
+    	        if(!$Calle) {
+    	            $log [] = 'No existe la calle ' . $PartesDomicilio [0];
+    	        }
+    	         
+    	        $Persona->setDomicilioCalle($Calle);
+    	        $Persona->setDomicilioCalleNombre($PartesDomicilio [0]);
+    	        $Persona->setDomicilioNumero($PartesDomicilio [1]);
+    	        if(count($PartesDomicilio) > 2) {
+    	            $Persona->setDomicilioPuerta($PartesDomicilio [2]);
+    	        }
+    	         
+    	        $Persona->setApellido ( StringHelper::Desoraclizar ( $ApellidoYNombres [0] ) );
+    	        $Persona->setNombre ( StringHelper::Desoraclizar ( $ApellidoYNombres [1] ) );
+    	        $Persona->setTelefonoNumero ( trim ( $Row[5] ) );
+    	        $Persona->setEmail ( trim ( $Row[5] ) );
+    	         
+    	        $em->persist ( $Persona );
+    	        $em->flush ();
+    	        
+    	        switch ($Row[4]) {
+    	            case 'Arquitecto':
+    	            case 'Artquitecto':
+    	            case 'Arquiteto':
+    	                $Profesion = 'Arquitecto';
+    	                break;
+    	            case 'M.M. Obras':
+    	            case 'M.M Obras':
+    	            case 'M.M. Obra':
+    	            case 'M.M. Obrasº':
+    	            case 'M.M.Obras':
+    	                $Profesion = 'Maestro mayor de obras';
+    	                break;
+    	            case 'Ing. Construcc':
+    	            case 'Ing.Construcciones':
+    	            case 'Ing. Construcciones':
+    	                $Profesion = 'Ingeniero en construcciones';
+    	                break;
+    	            case 'Ing. Civil':
+    	            case 'Ing.Civil':
+    	                $Profesion = 'Ingeniero civil';
+    	                break;
+    	            case 'T. Constructor':
+    	                $Profesion = 'Técnico constructor';
+    	                break;
+    	            default:
+                        $Profesion = '???';
+                        break;
+    	        }
+    	
+    	        $entity->setProfesion ( $Profesion );
+    	        // Si no está en el grupo agentes, lo agrego
+    	        if ($Persona->getGrupos ()->contains ( $GrupoMatriculados ) == false) {
+    	            $Persona->getGrupos ()->add ( $GrupoMatriculados );
+    	            $em->persist ( $Persona );
+    	        }
+    	        	
+    	        $em->persist ( $entity );
+    	        $em->flush ();
+    	        	
+    	        $importar_procesados ++;
+    	        $log [] = $Row [0] . ': ' . ( string ) $entity . ' (' . $entity->getProfesion() . ')';
+	        }
+	    }
+	
+	    return array (
+	        'importar_importados' => $importar_importados,
+	        'importar_actualizados' => $importar_actualizados,
+	        'importar_procesados' => $importar_procesados,
+	        'redir_desde' => ($importar_procesados == $cant ? $desde + $cant : 0),
+	        'log' => $log
+	    );
+	 
+	fclose($ArchivoMatriculados);
+	
 	}
 }
