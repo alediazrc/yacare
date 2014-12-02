@@ -1016,12 +1016,12 @@ WHERE rnum >" . $desde . "
     	        ) ); */
     	         
     	        $Calles = $em->getRepository('YacareCatastroBundle:Calle')->createQueryBuilder('c')
-    	        ->where('c.Nombre LIKE :nombre')
-    	        ->setParameter('nombre', $this->ArreglarNombreCalle ( $PartesDomicilio [0] ))
-    	        ->getQuery()
-    	        ->getResult();
+        	        ->where('c.Nombre LIKE :nombre')
+        	        ->setParameter('nombre', $this->ArreglarNombreCalle ( $PartesDomicilio [0] ))
+        	        ->getQuery()
+        	        ->getResult();
     	         
-    	        if($Calles) {
+    	        if(count($Calles) == 1) {
     	            $Calle = $Calles[0];
     	        }
     	         
