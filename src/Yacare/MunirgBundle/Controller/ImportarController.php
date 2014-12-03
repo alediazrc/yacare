@@ -1039,7 +1039,7 @@ WHERE rnum >" . $desde . "
     	        $Persona->setApellido ( StringHelper::Desoraclizar ( $ApellidoYNombres [0] ) );
     	        $Persona->setNombre ( StringHelper::Desoraclizar ( $ApellidoYNombres [1] ) );
     	        $Persona->setTelefonoNumero ( trim ( $Row[5] ) );
-    	        $Persona->setEmail ( trim ( $Row[5] ) );
+    	        $Persona->setEmail ( trim ( $Row[6] ) );
     	         
     	        $em->persist ( $Persona );
     	        $em->flush ();
